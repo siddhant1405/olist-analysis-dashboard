@@ -1,0 +1,30 @@
+model Model
+	culture: en-US
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	sourceQueryCulture: en-US
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+annotation PBI_QueryOrder = ["dev fact_orders","dev fact_order_items","dev dim_seller","dev dim_product","dev dim_geolocation","dev dim_customers"]
+
+annotation __PBI_TimeIntelligenceEnabled = 1
+
+annotation PBI_ProTooling = ["DevMode"]
+
+ref table 'dev fact_orders'
+ref table DateTableTemplate_eff1be3b-ac15-41cd-a6a4-4a286fb034c5
+ref table LocalDateTable_4c0319a6-903d-43e2-acc3-7ff7b5ba6d71
+ref table LocalDateTable_a8897c2b-42d7-45ae-a4d8-41a70ddeb1a6
+ref table LocalDateTable_7c8c87f1-ca28-4167-83e3-e3f140390274
+ref table LocalDateTable_9ec1ce8d-e697-40ea-89f7-edfb9fb7c697
+ref table LocalDateTable_1b829e1d-7841-4553-8afa-3f6a35e9bff3
+ref table 'dev fact_order_items'
+ref table LocalDateTable_fdb59094-63d5-40a6-a53d-7cb0efe22fea
+ref table 'dev dim_seller'
+ref table 'dev dim_product'
+ref table 'dev dim_geolocation'
+ref table 'dev dim_customers'
+
+ref cultureInfo en-US
+

@@ -1,0 +1,59 @@
+table 'dev dim_customers'
+	lineageTag: 33e1db6a-be72-4ed3-ac91-e464437379e0
+
+	measure 'Total customers' = DISTINCTCOUNT('dev dim_customers'[customer_id])
+		formatString: 0
+		lineageTag: fbb3b779-4cdb-45c5-bd3f-0dc1f0c25d42
+
+	column customer_id
+		dataType: string
+		lineageTag: c603cce4-a4fe-452e-acb2-51e7fbae2db3
+		summarizeBy: none
+		sourceColumn: customer_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column customer_unique_id
+		dataType: string
+		lineageTag: d8dc881c-076e-41aa-8601-6e32c2581592
+		summarizeBy: none
+		sourceColumn: customer_unique_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column zip_code_prefix
+		dataType: int64
+		formatString: 0
+		lineageTag: 6028eaaf-2048-40bd-8ebf-b180ae7aec89
+		summarizeBy: sum
+		sourceColumn: zip_code_prefix
+
+		annotation SummarizationSetBy = Automatic
+
+	column city
+		dataType: string
+		lineageTag: 6031b4cf-6359-423b-a9e4-ed4e600ce11b
+		summarizeBy: none
+		sourceColumn: city
+
+		annotation SummarizationSetBy = Automatic
+
+	column state
+		dataType: string
+		lineageTag: 60f6287a-c392-428d-a449-4600a8c7d244
+		summarizeBy: none
+		sourceColumn: state
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'dev dim_customers' = m
+		mode: import
+		source =
+				let
+				    Source = PostgreSQL.Database("localhost", "olist_dw"),
+				    dev_dim_customers = Source{[Schema="dev",Item="dim_customers"]}[Data]
+				in
+				    dev_dim_customers
+
+	annotation PBI_ResultType = Table
+

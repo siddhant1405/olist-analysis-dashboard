@@ -1,0 +1,57 @@
+relationship d4b07dd8-ce83-4063-8a5b-f241f170354a
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'dev fact_orders'.order_purchase_at
+	toColumn: LocalDateTable_4c0319a6-903d-43e2-acc3-7ff7b5ba6d71.Date
+
+relationship ebdf6583-7f5f-458d-bcb6-5cfb4f165191
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'dev fact_orders'.order_approved_at
+	toColumn: LocalDateTable_a8897c2b-42d7-45ae-a4d8-41a70ddeb1a6.Date
+
+relationship 7ef3b58e-dda6-4716-be5d-db1e517a6793
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'dev fact_orders'.order_delivered_carrier_at
+	toColumn: LocalDateTable_7c8c87f1-ca28-4167-83e3-e3f140390274.Date
+
+relationship a1d148e4-1f7d-48dc-ba72-c10ad885c4d9
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'dev fact_orders'.order_delivered_customer_at
+	toColumn: LocalDateTable_9ec1ce8d-e697-40ea-89f7-edfb9fb7c697.Date
+
+relationship 9533b25f-55b7-44f3-af61-cd569d47a7b4
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'dev fact_orders'.order_estimated_delivery_at
+	toColumn: LocalDateTable_1b829e1d-7841-4553-8afa-3f6a35e9bff3.Date
+
+relationship 5969143c-b825-4934-bcdf-12e877ca2c6b
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'dev fact_order_items'.shipping_limit_at
+	toColumn: LocalDateTable_fdb59094-63d5-40a6-a53d-7cb0efe22fea.Date
+
+relationship AutoDetected_239c48a8-c180-430f-a45e-8614539f5e67
+	fromColumn: 'dev fact_order_items'.order_id
+	toColumn: 'dev fact_orders'.order_id
+
+relationship AutoDetected_b513976f-50cc-48e1-9ec5-833526707dce
+	crossFilteringBehavior: bothDirections
+	fromCardinality: one
+	fromColumn: 'dev dim_customers'.customer_id
+	toColumn: 'dev fact_orders'.customer_id
+
+relationship AutoDetected_2805538a-4ab5-4e1f-ad07-636471a89777
+	fromColumn: 'dev fact_order_items'.seller_id
+	toColumn: 'dev dim_seller'.seller_id
+
+relationship AutoDetected_d9dadece-a418-4ec9-9a7a-8d5051622b61
+	fromColumn: 'dev dim_seller'.zip_code_prefix
+	toColumn: 'dev dim_geolocation'.zip_code_prefix
+
+relationship AutoDetected_6733312b-b023-4bf3-9fc6-32b6f2929399
+	isActive: false
+	fromColumn: 'dev dim_customers'.zip_code_prefix
+	toColumn: 'dev dim_geolocation'.zip_code_prefix
+
+relationship 79ca7a27-d2d7-78a2-3b71-56c9944300ca
+	fromColumn: 'dev fact_order_items'.product_id
+	toColumn: 'dev dim_product'.product_id
+

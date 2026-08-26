@@ -1,0 +1,199 @@
+table 'dev fact_orders'
+	lineageTag: 9cdefce9-1050-451f-88c3-9be36dd69cf7
+
+	measure 'Total revenue' = SUM('dev fact_order_items'[price])
+		lineageTag: d220fefc-72a2-4706-8745-e44976eaf179
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Total orders' = DISTINCTCOUNT('dev fact_orders'[order_id])
+		formatString: 0
+		lineageTag: e396dd91-e192-4d6a-8e7a-f4a6fc28fb44
+
+	measure 'Avg delivery days' = AVERAGE('dev fact_orders'[delivery_days])
+		lineageTag: e9b6c03d-4cc3-4e6f-ab01-ece8c0b265b7
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Total Order Value' = SUM('dev fact_orders'[total_payment_value])
+		lineageTag: 1c4d3c58-af87-458c-93f5-1a9ca5058fca
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure Avg_order_value = AVERAGE('dev fact_orders'[total_payment_value])
+		lineageTag: 270accbc-5429-459f-9a5c-db1f2775f8c9
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column order_id
+		dataType: string
+		lineageTag: aebc7103-f583-4fb8-82b5-e5fb81a8da97
+		summarizeBy: none
+		sourceColumn: order_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column customer_id
+		dataType: string
+		lineageTag: 84cb3830-d5b7-4f8b-acb5-7830324ad7a0
+		summarizeBy: none
+		sourceColumn: customer_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column order_status
+		dataType: string
+		lineageTag: 2750f153-b761-4b6d-bbde-ee214d8b0558
+		summarizeBy: none
+		sourceColumn: order_status
+
+		annotation SummarizationSetBy = Automatic
+
+	column order_purchase_at
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: c05744db-d46a-4264-9fb7-ff1847ec81f9
+		summarizeBy: none
+		sourceColumn: order_purchase_at
+
+		variation Variation
+			isDefault
+			relationship: d4b07dd8-ce83-4063-8a5b-f241f170354a
+			defaultHierarchy: LocalDateTable_4c0319a6-903d-43e2-acc3-7ff7b5ba6d71.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column order_approved_at
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: c5720b01-9b15-4032-b266-65e4d9129ac7
+		summarizeBy: none
+		sourceColumn: order_approved_at
+
+		variation Variation
+			isDefault
+			relationship: ebdf6583-7f5f-458d-bcb6-5cfb4f165191
+			defaultHierarchy: LocalDateTable_a8897c2b-42d7-45ae-a4d8-41a70ddeb1a6.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column order_delivered_carrier_at
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: b8be5dd3-7e29-4de4-9830-e6b9d93cb93c
+		summarizeBy: none
+		sourceColumn: order_delivered_carrier_at
+
+		variation Variation
+			isDefault
+			relationship: 7ef3b58e-dda6-4716-be5d-db1e517a6793
+			defaultHierarchy: LocalDateTable_7c8c87f1-ca28-4167-83e3-e3f140390274.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column order_delivered_customer_at
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 5abd48ec-8e52-43be-a87e-1394525a27a4
+		summarizeBy: none
+		sourceColumn: order_delivered_customer_at
+
+		variation Variation
+			isDefault
+			relationship: a1d148e4-1f7d-48dc-ba72-c10ad885c4d9
+			defaultHierarchy: LocalDateTable_9ec1ce8d-e697-40ea-89f7-edfb9fb7c697.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column order_estimated_delivery_at
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: cd78216e-a3b7-4b20-8ba9-d880ee260309
+		summarizeBy: none
+		sourceColumn: order_estimated_delivery_at
+
+		variation Variation
+			isDefault
+			relationship: 9533b25f-55b7-44f3-af61-cd569d47a7b4
+			defaultHierarchy: LocalDateTable_1b829e1d-7841-4553-8afa-3f6a35e9bff3.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column total_payment_value
+		dataType: double
+		lineageTag: 2c95caa1-5d5f-4fca-8b51-55ace8fa0b20
+		summarizeBy: sum
+		sourceColumn: total_payment_value
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column payment_count
+		dataType: int64
+		formatString: 0
+		lineageTag: 655ca3ff-9c93-45a9-a179-2726da120ddc
+		summarizeBy: sum
+		sourceColumn: payment_count
+
+		annotation SummarizationSetBy = Automatic
+
+	column primary_payment_type
+		dataType: string
+		lineageTag: 2b35ad00-0a26-49e8-8651-cecb80670b4f
+		summarizeBy: none
+		sourceColumn: primary_payment_type
+
+		annotation SummarizationSetBy = Automatic
+
+	column review_score
+		dataType: int64
+		formatString: 0
+		lineageTag: 873f5dc6-0a86-48c9-9ba5-cc239b04f858
+		summarizeBy: sum
+		sourceColumn: review_score
+
+		annotation SummarizationSetBy = Automatic
+
+	column delivery_days
+		dataType: double
+		lineageTag: 13d64555-6077-4684-8e56-14a566eb3dd7
+		summarizeBy: sum
+		sourceColumn: delivery_days
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column delivery_days_vs_estimated
+		dataType: double
+		lineageTag: 910b0d8a-170c-4bb2-8751-6f0fbace8cc8
+		summarizeBy: sum
+		sourceColumn: delivery_days_vs_estimated
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column 'Delivery Bucket'
+		dataType: string
+		lineageTag: 43b10b5d-b935-4188-a460-c906bf326c0a
+		summarizeBy: none
+		sourceColumn: Delivery Bucket
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'dev fact_orders' = m
+		mode: import
+		source =
+				let
+				    Source = PostgreSQL.Database("localhost", "olist_dw"),
+				    dev_fact_orders = Source{[Schema="dev",Item="fact_orders"]}[Data],
+				    #"Added Conditional Column" = Table.AddColumn(dev_fact_orders, "Delivery Bucket", each if [delivery_days_vs_estimated] > 0 then "Early" else if [delivery_days_vs_estimated] = 0 then "On Time" else "Late")
+				in
+				    #"Added Conditional Column"
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigation
+

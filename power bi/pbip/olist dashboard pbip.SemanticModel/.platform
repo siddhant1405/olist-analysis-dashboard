@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "SemanticModel",
+    "displayName": "olist dashboard pbip"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "9d118ef4-fa5a-4ba7-81e0-6a6fc05338f3"
+  }
+}

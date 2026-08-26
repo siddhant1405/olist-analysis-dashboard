@@ -1,0 +1,110 @@
+table 'dev dim_product'
+	lineageTag: 5e3b7424-0536-499d-a574-8ffe291621d4
+
+	measure 'Avg review score' = AVERAGE('dev fact_orders'[review_score])
+		lineageTag: 7547f06b-f327-4c7f-9638-d713620d09ba
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column product_id
+		dataType: string
+		lineageTag: daaab3a4-60a8-4695-a568-82c128d5b885
+		summarizeBy: none
+		sourceColumn: product_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column product_category_name
+		dataType: string
+		lineageTag: ca39d63e-86f7-43e2-8b7b-21ae81c479a1
+		summarizeBy: none
+		sourceColumn: product_category_name
+
+		annotation SummarizationSetBy = Automatic
+
+	column product_category_name_english
+		dataType: string
+		lineageTag: a71fed44-6ba2-4b01-b6e8-e9e3cc73c8fa
+		summarizeBy: none
+		sourceColumn: product_category_name_english
+
+		annotation SummarizationSetBy = Automatic
+
+	column product_name_lenght
+		dataType: int64
+		formatString: 0
+		lineageTag: 47b03244-1bcf-4972-aa30-90fbce2b917e
+		summarizeBy: none
+		sourceColumn: product_name_lenght
+
+		annotation SummarizationSetBy = Automatic
+
+	column product_description_lenght
+		dataType: int64
+		formatString: 0
+		lineageTag: e2c3ba37-16a0-4b3c-b676-e9889aa978eb
+		summarizeBy: none
+		sourceColumn: product_description_lenght
+
+		annotation SummarizationSetBy = Automatic
+
+	column product_photos_qty
+		dataType: int64
+		formatString: 0
+		lineageTag: a0cc1890-3e9e-45ac-b4a4-957feda1fc18
+		summarizeBy: none
+		sourceColumn: product_photos_qty
+
+		annotation SummarizationSetBy = Automatic
+
+	column product_weight_g
+		dataType: double
+		lineageTag: 6c07902b-47b4-45ba-9e51-85d34092d601
+		summarizeBy: none
+		sourceColumn: product_weight_g
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column product_length_cm
+		dataType: double
+		lineageTag: d4c67e00-3bda-4e42-a939-f805affff52a
+		summarizeBy: none
+		sourceColumn: product_length_cm
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column product_height_cm
+		dataType: double
+		lineageTag: a0d07265-3d49-4fa0-a48b-b47199eaed33
+		summarizeBy: none
+		sourceColumn: product_height_cm
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column product_width_cm
+		dataType: double
+		lineageTag: 89ca945b-ac95-4b16-b911-64d86d9071ee
+		summarizeBy: none
+		sourceColumn: product_width_cm
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	partition 'dev dim_product' = m
+		mode: import
+		source =
+				let
+				    Source = PostgreSQL.Database("localhost", "olist_dw"),
+				    dev_dim_product = Source{[Schema="dev",Item="dim_product"]}[Data]
+				in
+				    dev_dim_product
+
+	annotation PBI_ResultType = Table
+

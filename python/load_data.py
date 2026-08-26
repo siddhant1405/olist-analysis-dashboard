@@ -1,18 +1,17 @@
+"""Load the original Olist CSV files into PostgreSQL's raw schema."""
+
+from __future__ import annotations
+
+import os
+from pathlib import Path
+
 import pandas as pd
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
+from sqlalchemy.engine import URL
 
-DB_USER = "postgres"
-DB_PASS = "Hulksmashearth52"
-DB_HOST = "localhost"
-DB_PORT = "5432"
-DB_NAME = "olist_dw"
-SCHEMA = "raw"
-
-DATA_DIR = "data"  
-engine = create_engine(f"postgresql://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}")
-
-
-files = {
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+ENV_FILE = PROJECT_ROOT / ".env"
+FILES = {
     "olist_customers_dataset": "olist_customers_dataset.csv",
     "olist_orders_dataset": "olist_orders_dataset.csv",
     "olist_order_items_dataset": "olist_order_items_dataset.csv",
@@ -23,18 +22,65 @@ files = {
     "olist_geolocation_dataset": "olist_geolocation_dataset.csv",
     "product_category_name_translation": "product_category_name_translation.csv",
 }
+CHUNK_SIZE = 5_000
 
-for table_name, filename in files.items():
-    filepath = f"{DATA_DIR}/{filename}"
 
-    print(f"Loading {filename} -> {SCHEMA}.{table_name}")
-    df = pd.read_csv(filepath)
-    df.to_sql(
-        table_name,
-        engine,
-        schema=SCHEMA,
-        if_exists="replace", 
-        index=False
+def load_dotenv(path: Path) -> None:
+    if not path.exists():
+        raise FileNotFoundError(f"Missing {path}. Copy .env.example to .env and fill it in.")
+    for line in path.read_text(encoding="utf-8").splitlines():
+        line = line.strip()
+        if line and not line.startswith("#") and "=" in line:
+            key, value = line.split("=", 1)
+            os.environ.setdefault(key.strip(), value.strip())
+
+
+def required_env(name: str) -> str:
+    value = os.getenv(name)
+    if not value:
+        raise RuntimeError(f"{name} is required; set it in .env.")
+    return value
+
+
+def main() -> None:
+    load_dotenv(ENV_FILE)
+    data_dir = PROJECT_ROOT / os.getenv("OLIST_DATA_DIR", "data/raw")
+    schema = os.getenv("POSTGRES_SCHEMA", "raw")
+    missing = [name for name in FILES.values() if not (data_dir / name).is_file()]
+    if missing:
+        raise FileNotFoundError(f"Missing CSV files in {data_dir}: {', '.join(missing)}")
+
+    url = URL.create(
+        "postgresql+psycopg2",
+        username=required_env("POSTGRES_USER"),
+        password=required_env("POSTGRES_PASSWORD"),
+        host=required_env("POSTGRES_HOST"),
+        port=int(required_env("POSTGRES_PORT")),
+        database=required_env("POSTGRES_DB"),
     )
+    engine = create_engine(url, pool_pre_ping=True)
 
-print("Done loading all CSVs.")
+    with engine.begin() as connection:
+        connection.execute(text(f'CREATE SCHEMA IF NOT EXISTS "{schema}"'))
+
+    for table_name, filename in FILES.items():
+        path = data_dir / filename
+        print(f"Loading {filename} -> {schema}.{table_name}")
+        row_count = 0
+        for chunk_number, chunk in enumerate(pd.read_csv(path, chunksize=CHUNK_SIZE)):
+            chunk.to_sql(
+                table_name,
+                engine,
+                schema=schema,
+                if_exists="replace" if chunk_number == 0 else "append",
+                index=False,
+                method="multi",
+            )
+            row_count += len(chunk)
+        print(f"  loaded {row_count:,} rows")
+
+    print("All CSVs loaded successfully.")
+
+
+if __name__ == "__main__":
+    main()
