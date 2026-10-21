@@ -1,0 +1,38 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.10.0/schema.json",
+  "name": "e9933ef492e840d4aacf",
+  "position": { "x": 10, "y": 580, "width": 940, "height": 125, "z": 8000, "tabOrder": 8000 },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            { "field": { "Column": { "Expression": { "SourceRef": { "Entity": "dev customer_rfm" } }, "Property": "customer_unique_id" } }, "queryRef": "dev customer_rfm.customer_unique_id", "nativeQueryRef": "Customer" },
+            { "field": { "Column": { "Expression": { "SourceRef": { "Entity": "dev customer_rfm" } }, "Property": "recency_days" } }, "queryRef": "dev customer_rfm.recency_days", "nativeQueryRef": "Recency Days" },
+            { "field": { "Column": { "Expression": { "SourceRef": { "Entity": "dev customer_rfm" } }, "Property": "frequency" } }, "queryRef": "dev customer_rfm.frequency", "nativeQueryRef": "Orders" },
+            { "field": { "Column": { "Expression": { "SourceRef": { "Entity": "dev customer_rfm" } }, "Property": "monetary" } }, "queryRef": "dev customer_rfm.monetary", "nativeQueryRef": "Monetary" },
+            { "field": { "Column": { "Expression": { "SourceRef": { "Entity": "dev customer_rfm" } }, "Property": "recency_score" } }, "queryRef": "dev customer_rfm.recency_score", "nativeQueryRef": "R Score" },
+            { "field": { "Column": { "Expression": { "SourceRef": { "Entity": "dev customer_rfm" } }, "Property": "frequency_score" } }, "queryRef": "dev customer_rfm.frequency_score", "nativeQueryRef": "F Score" },
+            { "field": { "Column": { "Expression": { "SourceRef": { "Entity": "dev customer_rfm" } }, "Property": "monetary_score" } }, "queryRef": "dev customer_rfm.monetary_score", "nativeQueryRef": "M Score" },
+            { "field": { "Column": { "Expression": { "SourceRef": { "Entity": "dev customer_rfm" } }, "Property": "rfm_segment" } }, "queryRef": "dev customer_rfm.rfm_segment", "nativeQueryRef": "RFM Segment" }
+          ]
+        }
+      }
+    },
+    "visualContainerObjects": {
+      "background": [{ "properties": { "show": { "expr": { "Literal": { "Value": "false" } } } } }],
+      "title": [{ "properties": {
+        "show": { "expr": { "Literal": { "Value": "true" } } },
+        "text": { "expr": { "Literal": { "Value": "'Customer RFM Scores and Segment'" } } },
+        "fontSize": { "expr": { "Literal": { "Value": "12D" } } },
+        "fontColor": { "solid": { "color": { "expr": { "Literal": { "Value": "'#1D1C1C'" } } } } }
+      } }]
+    },
+    "drillFilterOtherVisuals": true,
+    "objects": {
+      "columnHeaders": [{ "properties": { "autoSizeColumnWidth": { "expr": { "Literal": { "Value": "true" } } }, "columnAdjustment": { "expr": { "Literal": { "Value": "'growToFit'" } } } } }],
+      "values": [{ "properties": { "fontSize": { "expr": { "Literal": { "Value": "9D" } } } } }]
+    }
+  }
+}

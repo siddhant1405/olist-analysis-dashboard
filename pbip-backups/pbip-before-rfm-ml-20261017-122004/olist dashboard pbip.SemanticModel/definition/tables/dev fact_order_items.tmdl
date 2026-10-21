@@ -1,0 +1,101 @@
+table 'dev fact_order_items'
+	lineageTag: 4f89818c-be04-4366-b5d0-5cd87f6144dc
+
+	measure 'Seller Order Count' = DISTINCTCOUNT('dev fact_order_items'[order_id])
+		formatString: 0
+		lineageTag: 383dfcf6-fced-4b84-9360-e8e0cef90de5
+
+	column order_id
+		dataType: string
+		lineageTag: 97a012f4-3058-4c74-a76f-f132bfc8224d
+		summarizeBy: none
+		sourceColumn: order_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column order_item_id
+		dataType: int64
+		formatString: 0
+		lineageTag: 7d236186-42ca-4eee-9bac-ea4839d1f1a0
+		summarizeBy: sum
+		sourceColumn: order_item_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column product_id
+		dataType: string
+		lineageTag: 6ca44812-454f-4c6c-8ed0-787bb9b66ad2
+		summarizeBy: none
+		sourceColumn: product_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column seller_id
+		dataType: string
+		lineageTag: 9c6123cf-be56-4daa-8a6a-b93281c0103f
+		summarizeBy: none
+		sourceColumn: seller_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column shipping_limit_at
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 50afae15-db9c-4f22-9f44-c07f6b31a126
+		summarizeBy: none
+		sourceColumn: shipping_limit_at
+
+		variation Variation
+			isDefault
+			relationship: 5969143c-b825-4934-bcdf-12e877ca2c6b
+			defaultHierarchy: LocalDateTable_fdb59094-63d5-40a6-a53d-7cb0efe22fea.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+	column price
+		dataType: double
+		lineageTag: 2bdb75a7-15e7-49a0-906e-2ca08e46119e
+		summarizeBy: sum
+		sourceColumn: price
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column freight_value
+		dataType: double
+		lineageTag: 30d8d25b-4288-473c-ad3d-ea2404f4690a
+		summarizeBy: sum
+		sourceColumn: freight_value
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column product_category_name_english
+		dataType: string
+		lineageTag: b11b9d42-6470-49d7-bda8-e455432ba1f5
+		summarizeBy: none
+		sourceColumn: product_category_name_english
+
+		annotation SummarizationSetBy = Automatic
+
+	column saller_state
+		dataType: string
+		lineageTag: c02d0694-051d-4782-bf75-35e047d725ce
+		summarizeBy: none
+		sourceColumn: saller_state
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'dev fact_order_items' = m
+		mode: import
+		source =
+				let
+				    Source = PostgreSQL.Database("localhost", "olist_dw"),
+				    dev_fact_order_items = Source{[Schema="dev",Item="fact_order_items"]}[Data]
+				in
+				    dev_fact_order_items
+
+	annotation PBI_ResultType = Table
+

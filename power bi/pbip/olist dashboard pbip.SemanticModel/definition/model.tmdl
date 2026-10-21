@@ -6,7 +6,7 @@ model Model
 		legacyRedirects
 		returnErrorValuesAsNull
 
-annotation PBI_QueryOrder = ["dev fact_orders","dev fact_order_items","dev dim_seller","dev dim_product","dev dim_geolocation","dev dim_customers"]
+annotation PBI_QueryOrder = ["dev fact_orders","dev fact_order_items","dev dim_seller","dev dim_product","dev dim_geolocation","dev dim_customers","dev customer_rfm"]
 
 annotation __PBI_TimeIntelligenceEnabled = 1
 
@@ -25,6 +25,7 @@ ref table 'dev dim_seller'
 ref table 'dev dim_product'
 ref table 'dev dim_geolocation'
 ref table 'dev dim_customers'
+ref table 'dev customer_rfm'
 ref table 'Pricing Scenarios'
 
 ref cultureInfo en-US

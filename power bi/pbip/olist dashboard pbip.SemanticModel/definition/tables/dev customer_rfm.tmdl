@@ -1,0 +1,112 @@
+table 'dev customer_rfm'
+	lineageTag: 0ab390ba-6002-43da-a3c7-1e5538209f21
+
+	measure 'Eligible Customer Count' = DISTINCTCOUNT('dev customer_rfm'[customer_unique_id])
+		formatString: #,##0
+		lineageTag: 6d3a5650-851e-41d2-b10b-8b3841bd2079
+
+	measure 'RFM Customer Share' = DIVIDE([Eligible Customer Count], CALCULATE([Eligible Customer Count], REMOVEFILTERS('dev customer_rfm'[rfm_segment])))
+		formatString: 0.0%
+		lineageTag: c415405d-fcbe-45b2-91f4-f5a9b4dad034
+
+	measure 'RFM Monetary Contribution' = SUM('dev customer_rfm'[monetary])
+		formatString: #,##0.00
+		lineageTag: 7a2974e6-d3df-4f25-93c0-0f98a04c6414
+
+	column customer_unique_id
+		dataType: string
+		lineageTag: 1a2b3775-6caa-47ca-b4ce-867ed6fd3cf4
+		summarizeBy: none
+		sourceColumn: customer_unique_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column reference_date
+		dataType: dateTime
+		formatString: Short Date
+		lineageTag: 267c8142-40db-44fc-b00f-8d89d4b49e8f
+		summarizeBy: none
+		sourceColumn: reference_date
+
+		annotation SummarizationSetBy = Automatic
+
+	column recency_days
+		dataType: int64
+		formatString: 0
+		lineageTag: 994ad916-5fa4-4d34-89da-755db6f1b8f1
+		summarizeBy: average
+		sourceColumn: recency_days
+
+		annotation SummarizationSetBy = Automatic
+
+	column frequency
+		dataType: int64
+		formatString: 0
+		lineageTag: 078e9099-9350-424b-a9ef-671a48d50dcc
+		summarizeBy: sum
+		sourceColumn: frequency
+
+		annotation SummarizationSetBy = Automatic
+
+	column monetary
+		dataType: double
+		formatString: #,##0.00
+		lineageTag: 0a4d3185-6ee8-4c4b-9761-6a2e7f10ce95
+		summarizeBy: sum
+		sourceColumn: monetary
+
+		annotation SummarizationSetBy = Automatic
+
+	column recency_score
+		dataType: int64
+		formatString: 0
+		lineageTag: f547b866-4703-4702-a3fd-288d7e1bc0c0
+		summarizeBy: none
+		sourceColumn: recency_score
+
+		annotation SummarizationSetBy = Automatic
+
+	column frequency_score
+		dataType: int64
+		formatString: 0
+		lineageTag: 43f43a09-5c80-497f-84bc-e5c1b9a25cd3
+		summarizeBy: none
+		sourceColumn: frequency_score
+
+		annotation SummarizationSetBy = Automatic
+
+	column monetary_score
+		dataType: int64
+		formatString: 0
+		lineageTag: 5aebf108-ffb3-40bc-9115-6bb35a62aeaa
+		summarizeBy: none
+		sourceColumn: monetary_score
+
+		annotation SummarizationSetBy = Automatic
+
+	column rfm_score
+		dataType: string
+		lineageTag: bfa55d4a-92f6-4dd8-a7b6-994f8f4a9c50
+		summarizeBy: none
+		sourceColumn: rfm_score
+
+		annotation SummarizationSetBy = Automatic
+
+	column rfm_segment
+		dataType: string
+		lineageTag: 9d740cd2-9ab5-42a1-a6c6-8fad5ac26443
+		summarizeBy: none
+		sourceColumn: rfm_segment
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'dev customer_rfm' = m
+		mode: import
+		source =
+				let
+				    Source = PostgreSQL.Database("localhost", "olist_dw"),
+				    dev_customer_rfm = Source{[Schema="dev",Item="customer_rfm"]}[Data]
+				in
+				    dev_customer_rfm
+
+	annotation PBI_ResultType = Table

@@ -1,0 +1,72 @@
+version: 2
+
+models:
+  - name: customer_rfm
+    description: >-
+      One row per underlying customer, using customer_unique_id when available.
+      RFM covers delivered orders with a non-null, non-negative total payment
+      value. The reproducible reference date is one day after the maximum
+      qualifying purchase date in the current dataset. Monetary is the sum of
+      the existing per-order total_payment_value and is not joined to item rows.
+      Orders with cancelled, unavailable, or other non-delivered statuses,
+      missing purchase timestamps, missing payment totals, or negative payment
+      totals are excluded. The source contains no explicit refund field; a
+      negative net order payment is excluded rather than interpreted as a
+      customer refund. customer_id is used only as a fallback if
+      customer_unique_id is blank.
+    columns:
+      - name: customer_unique_id
+        description: Stable underlying-customer key, with customer_id fallback only when necessary.
+        tests:
+          - not_null
+          - unique
+          - relationships:
+              arguments:
+                to: ref('dim_customers')
+                field: customer_unique_id
+      - name: reference_date
+        description: Dataset maximum qualifying purchase date plus one day.
+        tests:
+          - not_null
+      - name: recency_days
+        description: Calendar days from the last qualifying purchase to reference_date.
+        tests:
+          - not_null
+      - name: frequency
+        description: Distinct qualifying order count, not item-line count.
+        tests:
+          - not_null
+      - name: monetary
+        description: Sum of qualifying orders' total_payment_value, once per order.
+        tests:
+          - not_null
+      - name: recency_score
+        description: Five-point percentile score; recent customers score higher and tied recencies share a score.
+        tests:
+          - accepted_values:
+              arguments:
+                values: [1, 2, 3, 4, 5]
+      - name: frequency_score
+        description: Frequency tiers calibrated to the observed concentration of one-order customers; ties remain together.
+        tests:
+          - accepted_values:
+              arguments:
+                values: [1, 2, 3, 4, 5]
+      - name: monetary_score
+        description: Five-point percentile score; higher spend scores higher and tied values share a score.
+        tests:
+          - accepted_values:
+              arguments:
+                values: [1, 2, 3, 4, 5]
+      - name: rfm_segment
+        description: Mutually exclusive deterministic customer segment; every eligible customer is assigned exactly one.
+        tests:
+          - accepted_values:
+              arguments:
+                values:
+                  - Champions
+                  - Loyal Customers
+                  - Potential Loyalists
+                  - At Risk
+                  - Hibernating
+

@@ -1,0 +1,51 @@
+table 'dev dim_seller'
+	lineageTag: 765c0585-ce3d-401e-8d0f-cfad2e5ba47c
+
+	measure 'Total sellers' = DISTINCTCOUNT('dev fact_order_items'[seller_id])
+		formatString: 0
+		lineageTag: 46614795-5ce8-48e3-a3ee-85150b2bb5c5
+
+	column seller_id
+		dataType: string
+		lineageTag: 9e97d212-5715-409d-8812-7e64ed970c54
+		summarizeBy: none
+		sourceColumn: seller_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column zip_code_prefix
+		dataType: int64
+		formatString: 0
+		lineageTag: cf51e929-7688-4fb1-b9b5-d7de7c510d38
+		summarizeBy: none
+		sourceColumn: zip_code_prefix
+
+		annotation SummarizationSetBy = Automatic
+
+	column city
+		dataType: string
+		lineageTag: b2e041a9-3f3e-49a1-a4f8-e14e3cd3acd3
+		summarizeBy: none
+		sourceColumn: city
+
+		annotation SummarizationSetBy = Automatic
+
+	column state
+		dataType: string
+		lineageTag: 881cf229-f87d-45a6-8239-be95021e1219
+		summarizeBy: none
+		sourceColumn: state
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'dev dim_seller' = m
+		mode: import
+		source =
+				let
+				    Source = PostgreSQL.Database("localhost", "olist_dw"),
+				    dev_dim_seller = Source{[Schema="dev",Item="dim_seller"]}[Data]
+				in
+				    dev_dim_seller
+
+	annotation PBI_ResultType = Table
+

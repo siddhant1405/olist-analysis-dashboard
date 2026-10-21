@@ -1,0 +1,59 @@
+table 'dev dim_geolocation'
+	lineageTag: dc13fa6d-294c-401a-939f-df2414b31bc3
+
+	column zip_code_prefix
+		dataType: int64
+		formatString: 0
+		lineageTag: 7e3cdc6a-a87e-4e25-ac0c-901316867946
+		summarizeBy: none
+		sourceColumn: zip_code_prefix
+
+		annotation SummarizationSetBy = Automatic
+
+	column latitude
+		dataType: double
+		lineageTag: 08d7c2d9-38cf-444b-8029-c51c84528a58
+		summarizeBy: none
+		sourceColumn: latitude
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column longitude
+		dataType: double
+		lineageTag: 5ae6d349-8eb8-4bf2-bc60-02eb0cf8d958
+		summarizeBy: none
+		sourceColumn: longitude
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column city
+		dataType: string
+		lineageTag: 256c1e63-8d87-488e-8de2-d813af22cc14
+		summarizeBy: none
+		sourceColumn: city
+
+		annotation SummarizationSetBy = Automatic
+
+	column state
+		dataType: string
+		lineageTag: cb64a2a4-220a-4923-a74e-412e831d181a
+		summarizeBy: none
+		sourceColumn: state
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'dev dim_geolocation' = m
+		mode: import
+		source =
+				let
+				    Source = PostgreSQL.Database("localhost", "olist_dw"),
+				    dev_dim_geolocation = Source{[Schema="dev",Item="dim_geolocation"]}[Data]
+				in
+				    dev_dim_geolocation
+
+	annotation PBI_ResultType = Table
+

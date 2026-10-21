@@ -1,0 +1,21 @@
+/// Disconnected pricing scenarios used only for clearly labelled what-if analysis.
+table 'Pricing Scenarios'
+	lineageTag: 3c04b621-4f90-4be9-ab84-63aa3982f00a
+
+	column 'Discount Scenario'
+		dataType: string
+		lineageTag: a408079e-e6d9-447e-a580-06fcf6c2d522
+		summarizeBy: none
+		sourceColumn: [Discount Scenario]
+
+	column 'Discount Rate'
+		dataType: decimal
+		formatString: 0%
+		lineageTag: 3ae70ab2-7819-43e0-841a-d48662ee8314
+		summarizeBy: none
+		sourceColumn: [Discount Rate]
+
+	partition 'Pricing Scenarios' = calculated
+		mode: import
+		source = DATATABLE("Discount Scenario", STRING, "Discount Rate", DOUBLE, {{"5%", 0.05}, {"10%", 0.10}, {"15%", 0.15}, {"20%", 0.20}, {"25%", 0.25}, {"30%", 0.30}, {"35%", 0.35}})
+
