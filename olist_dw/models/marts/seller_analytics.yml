@@ -1,0 +1,31 @@
+version: 2
+
+models:
+  - name: seller_scorecard
+    description: >-
+      One row per seller with delivered orders in the analysis window. Orders
+      with several sellers count once for each seller. Handoff is late when the
+      carrier received the order after that seller's shipping limit. Sellers
+      with fewer than 30 orders are tiered Low volume; otherwise High risk means
+      a late rate at least twice the platform rate, and Watch means above it.
+    columns:
+      - name: seller_id
+        tests:
+          - not_null
+          - unique
+          - relationships:
+              arguments:
+                to: ref('dim_seller')
+                field: seller_id
+      - name: delivered_orders
+        tests:
+          - not_null
+      - name: late_rate
+        tests:
+          - not_null
+      - name: performance_tier
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['High risk', 'Watch', 'Healthy', 'Low volume']

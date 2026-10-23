@@ -1,7 +1,7 @@
 table 'dev dim_customers'
 	lineageTag: 33e1db6a-be72-4ed3-ac91-e464437379e0
 
-	measure 'Total customers' = DISTINCTCOUNT('dev dim_customers'[customer_id])
+	measure 'Total customers' = DISTINCTCOUNT('dev dim_customers'[customer_unique_id])
 		formatString: 0
 		lineageTag: fbb3b779-4cdb-45c5-bd3f-0dc1f0c25d42
 
@@ -50,7 +50,7 @@ table 'dev dim_customers'
 		mode: import
 		source =
 				let
-				    Source = PostgreSQL.Database("localhost", "olist_dw"),
+				    Source = PostgreSQL.Database("localhost:5434", "olist_dw"),
 				    dev_dim_customers = Source{[Schema="dev",Item="dim_customers"]}[Data]
 				in
 				    dev_dim_customers

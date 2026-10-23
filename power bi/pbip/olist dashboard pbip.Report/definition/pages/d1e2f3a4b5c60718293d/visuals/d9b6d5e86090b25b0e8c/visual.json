@@ -1,0 +1,57 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.10.0/schema.json",
+  "name": "d9b6d5e86090b25b0e8c",
+  "position": {
+    "x": 730.5,
+    "y": 90,
+    "width": 211.5,
+    "height": 34,
+    "z": 20003,
+    "tabOrder": 20003
+  },
+  "visual": {
+    "visualType": "textbox",
+    "visualContainerObjects": {
+      "background": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true,
+    "objects": {
+      "general": [
+        {
+          "properties": {
+            "paragraphs": [
+              {
+                "textRuns": [
+                  {
+                    "value": " "
+                  },
+                  {
+                    "value": "Median Days to 2nd Purchase",
+                    "textStyle": {
+                      "fontWeight": "normal",
+                      "fontFamily": "Constantia",
+                      "fontSize": "11pt",
+                      "color": "#6C6C6C"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

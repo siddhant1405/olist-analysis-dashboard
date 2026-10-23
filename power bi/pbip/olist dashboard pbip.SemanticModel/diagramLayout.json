@@ -10,7 +10,7 @@
       "nodes": [
         {
           "location": {
-            "x": 712.44304942348458,
+            "x": 2700.4430494234848,
             "y": 560.48951660906209
           },
           "nodeIndex": "dev dim_customers",
@@ -23,7 +23,7 @@
         },
         {
           "location": {
-            "x": 928.53523057817529,
+            "x": 2916.5352305781753,
             "y": 308.14339200394181
           },
           "nodeIndex": "dev dim_geolocation",
@@ -36,7 +36,7 @@
         },
         {
           "location": {
-            "x": 627.89289961500572,
+            "x": 2615.8928996150057,
             "y": 205.23433247895684
           },
           "nodeIndex": "dev dim_product",
@@ -49,7 +49,7 @@
         },
         {
           "location": {
-            "x": 338.80803052277804,
+            "x": 2326.8080305227782,
             "y": 35.594731924387133
           },
           "nodeIndex": "dev dim_seller",
@@ -62,7 +62,7 @@
         },
         {
           "location": {
-            "x": 50,
+            "x": 2038,
             "y": -50
           },
           "nodeIndex": "dev fact_order_items",
@@ -75,7 +75,7 @@
         },
         {
           "location": {
-            "x": 338.80698587088671,
+            "x": 2326.8069858708868,
             "y": 403.91869429608681
           },
           "nodeIndex": "dev fact_orders",
@@ -88,12 +88,91 @@
         },
         {
           "location": {
-            "x": 1162.5352305781753,
-            "y": 355.45934714804343
+            "x": 0,
+            "y": 295.45934714804343
           },
-          "nodeIndex": "Pricing Scenarios",
+          "nodeIndex": "dev customer_cohort_retention",
+          "nodeLineageTag": "0fc92b20-9b50-4818-8a8e-bc730f028c87",
           "size": {
-            "height": 128,
+            "height": 248,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 284,
+            "y": 269.45934714804343
+          },
+          "nodeIndex": "dev customer_rfm",
+          "nodeLineageTag": "e6c01646-4ca9-4c79-9054-2f703888359e",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 568,
+            "y": 269.45934714804343
+          },
+          "nodeIndex": "dev customer_summary",
+          "nodeLineageTag": "2c97f8d4-ac96-463d-84af-f1b11c2542f6",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 852,
+            "y": 307.45934714804343
+          },
+          "nodeIndex": "dev freight_demand_elasticity",
+          "nodeLineageTag": "657ae502-afb3-4357-947d-694a3108fa10",
+          "size": {
+            "height": 224,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1136,
+            "y": 269.45934714804343
+          },
+          "nodeIndex": "dev freight_subsidy_breakeven",
+          "nodeLineageTag": "917e3696-6b99-4b23-b202-c51a53c11b3e",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1420,
+            "y": 269.45934714804343
+          },
+          "nodeIndex": "dev region_summary",
+          "nodeLineageTag": "e4052353-3614-4b8a-ad9b-8c2d152c23e5",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1704,
+            "y": 269.45934714804343
+          },
+          "nodeIndex": "dev seller_scorecard",
+          "nodeLineageTag": "b3330e93-c54a-450f-bde9-fee571032f12",
+          "size": {
+            "height": 300,
             "width": 234
           },
           "zIndex": 0

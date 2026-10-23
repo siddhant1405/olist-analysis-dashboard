@@ -1,0 +1,214 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.10.0/schema.json",
+  "name": "52d1685697ab136ddb07",
+  "position": {
+    "x": 10,
+    "y": 185,
+    "width": 555,
+    "height": 200,
+    "z": 3000,
+    "tabOrder": 3000
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "dev seller_scorecard"
+                    }
+                  },
+                  "Property": "performance_tier"
+                }
+              },
+              "queryRef": "dev seller_scorecard.performance_tier",
+              "nativeQueryRef": "performance_tier"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "dev seller_scorecard"
+                    }
+                  },
+                  "Property": "Scored Sellers"
+                }
+              },
+              "queryRef": "dev seller_scorecard.Scored Sellers",
+              "nativeQueryRef": "Scored Sellers"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "dev seller_scorecard"
+                    }
+                  },
+                  "Property": "Share of Seller Orders"
+                }
+              },
+              "queryRef": "dev seller_scorecard.Share of Seller Orders",
+              "nativeQueryRef": "Share of Seller Orders"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "dev seller_scorecard"
+                    }
+                  },
+                  "Property": "Share of Late Orders"
+                }
+              },
+              "queryRef": "dev seller_scorecard.Share of Late Orders",
+              "nativeQueryRef": "Share of Late Orders"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "dev seller_scorecard"
+                    }
+                  },
+                  "Property": "Seller Late Rate"
+                }
+              },
+              "queryRef": "dev seller_scorecard.Seller Late Rate",
+              "nativeQueryRef": "Seller Late Rate"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "dev seller_scorecard"
+                    }
+                  },
+                  "Property": "Seller Avg Review"
+                }
+              },
+              "queryRef": "dev seller_scorecard.Seller Avg Review",
+              "nativeQueryRef": "Seller Avg Review"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "dev seller_scorecard"
+                  }
+                },
+                "Property": "performance_tier"
+              }
+            },
+            "direction": "Ascending"
+          }
+        ],
+        "isDefaultSort": true
+      }
+    },
+    "visualContainerObjects": {
+      "background": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Seller tiers (High risk = 30+ orders and 2x platform late rate)'"
+                }
+              }
+            },
+            "fontFamily": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Segoe UI'"
+                }
+              }
+            },
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "12D"
+                }
+              }
+            },
+            "fontColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#1D1C1C'"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true,
+    "objects": {
+      "values": [
+        {
+          "properties": {
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "10D"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "columnHeaders": [
+        {
+          "properties": {
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "10D"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

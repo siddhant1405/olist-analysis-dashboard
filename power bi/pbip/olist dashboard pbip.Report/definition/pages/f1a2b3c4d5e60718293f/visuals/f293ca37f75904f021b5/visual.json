@@ -1,0 +1,242 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.10.0/schema.json",
+  "name": "f293ca37f75904f021b5",
+  "position": {
+    "x": 10,
+    "y": 405,
+    "width": 940,
+    "height": 300,
+    "z": 5000,
+    "tabOrder": 5000
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "dev seller_scorecard"
+                    }
+                  },
+                  "Property": "seller_id"
+                }
+              },
+              "queryRef": "dev seller_scorecard.seller_id",
+              "nativeQueryRef": "seller_id"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "dev seller_scorecard"
+                    }
+                  },
+                  "Property": "seller_state"
+                }
+              },
+              "queryRef": "dev seller_scorecard.seller_state",
+              "nativeQueryRef": "seller_state"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "dev seller_scorecard"
+                    }
+                  },
+                  "Property": "delivered_orders"
+                }
+              },
+              "queryRef": "dev seller_scorecard.delivered_orders",
+              "nativeQueryRef": "delivered_orders"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "dev seller_scorecard"
+                    }
+                  },
+                  "Property": "late_orders"
+                }
+              },
+              "queryRef": "dev seller_scorecard.late_orders",
+              "nativeQueryRef": "late_orders"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "dev seller_scorecard"
+                    }
+                  },
+                  "Property": "late_rate"
+                }
+              },
+              "queryRef": "dev seller_scorecard.late_rate",
+              "nativeQueryRef": "late_rate"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "dev seller_scorecard"
+                    }
+                  },
+                  "Property": "handoff_late_rate"
+                }
+              },
+              "queryRef": "dev seller_scorecard.handoff_late_rate",
+              "nativeQueryRef": "handoff_late_rate"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "dev seller_scorecard"
+                    }
+                  },
+                  "Property": "avg_review_score"
+                }
+              },
+              "queryRef": "dev seller_scorecard.avg_review_score",
+              "nativeQueryRef": "avg_review_score"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "dev seller_scorecard"
+                    }
+                  },
+                  "Property": "performance_tier"
+                }
+              },
+              "queryRef": "dev seller_scorecard.performance_tier",
+              "nativeQueryRef": "performance_tier"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "dev seller_scorecard"
+                  }
+                },
+                "Property": "late_orders"
+              }
+            },
+            "direction": "Descending"
+          }
+        ],
+        "isDefaultSort": true
+      }
+    },
+    "visualContainerObjects": {
+      "background": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Sellers with the most late orders'"
+                }
+              }
+            },
+            "fontFamily": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Segoe UI'"
+                }
+              }
+            },
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "12D"
+                }
+              }
+            },
+            "fontColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#1D1C1C'"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true,
+    "objects": {
+      "values": [
+        {
+          "properties": {
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "10D"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "columnHeaders": [
+        {
+          "properties": {
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "10D"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

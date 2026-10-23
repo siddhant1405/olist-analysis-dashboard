@@ -1,0 +1,143 @@
+version: 2
+
+models:
+  - name: fact_orders
+    description: >-
+      One row per order. Payment, review and item totals are pre-aggregated to
+      the order grain. Delivery metrics compare calendar dates: an order is late
+      when it arrives on a day after the estimated delivery date. Delivery
+      fields are null for orders that were not delivered.
+    columns:
+      - name: order_id
+        tests:
+          - not_null
+          - unique
+      - name: customer_id
+        description: Order-level customer key; Olist issues a new one for every order.
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_customers')
+                field: customer_id
+      - name: customer_unique_id
+        description: Person-level customer key. Use this to count customers.
+        tests:
+          - not_null
+      - name: customer_region
+        description: IBGE macro-region of the customer's state, from the brazil_states seed.
+        tests:
+          - not_null
+      - name: purchase_month
+        description: First day of the purchase month.
+      - name: items_value
+        description: Sum of item prices (GMV, excluding freight).
+      - name: delivery_days
+        description: Whole days from purchase to delivery.
+      - name: delivery_days_vs_estimated
+        description: Deprecated; positive means early. Use days_late.
+      - name: promised_days
+        description: Calendar days from purchase to the estimated delivery date shown to the customer.
+      - name: is_delivered
+        description: Status is delivered and a delivery date exists.
+        tests:
+          - not_null
+      - name: days_late
+        description: Delivery date minus estimated date; positive is late, negative is early.
+      - name: is_late
+        description: Delivered after the estimated date. Null when not delivered.
+      - name: is_seller_handoff_late
+        description: The carrier received the order after the seller's shipping limit.
+      - name: is_cross_state
+        description: At least one seller on the order is in a different state from the customer.
+      - name: is_in_analysis_window
+        description: Purchase date falls inside the analysis_start_date / analysis_end_date vars.
+        tests:
+          - not_null
+      - name: seller_origin
+        description: Where the order's sellers are relative to the customer - Same state, From Sao Paulo, Other state, or Multiple states.
+        tests:
+          - accepted_values:
+              arguments:
+                values: ['Same state', 'From Sao Paulo', 'Other state', 'Multiple states']
+      - name: customer_type
+        description: New for orders on or before the customer's first delivered purchase day, Returning afterwards.
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['New', 'Returning']
+      - name: experience_group
+        description: Delivery outcome and order shape, ordered from most to least damaging for reviews; sort with experience_group_sort.
+        tests:
+          - not_null
+      - name: order_value_band
+        description: Item value of the order (excluding freight), banded; sort with order_value_band_sort.
+      - name: delivery_status
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['On time', 'Late', 'Not delivered']
+      - name: delivery_timing_bucket
+        description: Days early or late, grouped; sort with delivery_timing_sort.
+      - name: customer_order_number
+        description: Order sequence for the customer (1 = first order, any status).
+        tests:
+          - not_null
+
+  - name: fact_order_items
+    description: One row per order item (order_id, order_item_id).
+    columns:
+      - name: order_id
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('fact_orders')
+                field: order_id
+      - name: product_id
+        tests:
+          - relationships:
+              arguments:
+                to: ref('dim_product')
+                field: product_id
+      - name: seller_id
+        tests:
+          - relationships:
+              arguments:
+                to: ref('dim_seller')
+                field: seller_id
+
+  - name: dim_customers
+    description: One row per order-level customer_id.
+    columns:
+      - name: customer_id
+        tests:
+          - not_null
+          - unique
+      - name: customer_unique_id
+        tests:
+          - not_null
+
+  - name: dim_seller
+    columns:
+      - name: seller_id
+        tests:
+          - not_null
+          - unique
+
+  - name: dim_product
+    columns:
+      - name: product_id
+        tests:
+          - not_null
+          - unique
+
+  - name: dim_geolocation
+    description: One row per zip code prefix, with averaged coordinates.
+    columns:
+      - name: zip_code_prefix
+        tests:
+          - not_null
+          - unique

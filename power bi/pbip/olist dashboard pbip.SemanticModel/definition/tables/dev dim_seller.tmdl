@@ -42,7 +42,7 @@ table 'dev dim_seller'
 		mode: import
 		source =
 				let
-				    Source = PostgreSQL.Database("localhost", "olist_dw"),
+				    Source = PostgreSQL.Database("localhost:5434", "olist_dw"),
 				    dev_dim_seller = Source{[Schema="dev",Item="dim_seller"]}[Data]
 				in
 				    dev_dim_seller

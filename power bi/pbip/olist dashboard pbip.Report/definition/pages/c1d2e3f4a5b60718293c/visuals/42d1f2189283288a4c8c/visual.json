@@ -1,0 +1,57 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.10.0/schema.json",
+  "name": "42d1f2189283288a4c8c",
+  "position": {
+    "x": 10,
+    "y": 56,
+    "width": 700,
+    "height": 26,
+    "z": 19001,
+    "tabOrder": 19001
+  },
+  "visual": {
+    "visualType": "textbox",
+    "visualContainerObjects": {
+      "background": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true,
+    "objects": {
+      "general": [
+        {
+          "properties": {
+            "paragraphs": [
+              {
+                "textRuns": [
+                  {
+                    "value": " "
+                  },
+                  {
+                    "value": "Delivery, retention, regional and seller metrics cover delivered orders from Jan 2017 to Aug 2018.",
+                    "textStyle": {
+                      "fontWeight": "normal",
+                      "fontFamily": "Constantia",
+                      "fontSize": "10pt",
+                      "color": "#6C6C6C"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

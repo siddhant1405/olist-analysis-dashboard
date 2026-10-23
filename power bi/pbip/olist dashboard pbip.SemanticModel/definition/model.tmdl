@@ -6,7 +6,7 @@ model Model
 		legacyRedirects
 		returnErrorValuesAsNull
 
-annotation PBI_QueryOrder = ["dev fact_orders","dev fact_order_items","dev dim_seller","dev dim_product","dev dim_geolocation","dev dim_customers","dev customer_rfm"]
+annotation PBI_QueryOrder = ["dev fact_orders","dev fact_order_items","dev dim_seller","dev dim_product","dev dim_geolocation","dev dim_customers","dev customer_rfm","dev customer_summary","dev customer_cohort_retention","dev seller_scorecard","dev region_summary","dev freight_demand_elasticity","dev freight_subsidy_breakeven"]
 
 annotation __PBI_TimeIntelligenceEnabled = 1
 
@@ -26,7 +26,20 @@ ref table 'dev dim_product'
 ref table 'dev dim_geolocation'
 ref table 'dev dim_customers'
 ref table 'dev customer_rfm'
-ref table 'Pricing Scenarios'
+ref table 'dev customer_summary'
+ref table 'dev customer_cohort_retention'
+ref table 'dev seller_scorecard'
+ref table 'dev region_summary'
+ref table 'dev freight_demand_elasticity'
+ref table 'dev freight_subsidy_breakeven'
+ref table LocalDateTable_faa9f15b-fd19-4f88-8383-63860e04662d
+ref table LocalDateTable_4ac5a7e2-8e14-4f4e-bb3a-efe8b2f8c108
+ref table LocalDateTable_f0ddc1bf-08e1-4a47-bc08-b0d33ccb06cf
+ref table LocalDateTable_e1dea15d-fa0d-4caf-ad80-8ff1afc82caf
+ref table LocalDateTable_ac187759-185c-4959-8526-62c5357cf653
+ref table LocalDateTable_c2c211b6-a3c6-45a6-97df-a741822039ce
+ref table LocalDateTable_3cb82547-a9ee-4d0b-9721-7cea5df7e68e
+ref table LocalDateTable_b90d8bfc-53b9-46a6-a22f-5c5628b688f7
 
 ref cultureInfo en-US
 

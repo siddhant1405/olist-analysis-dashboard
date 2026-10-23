@@ -42,7 +42,7 @@ table 'dev fact_orders'
 	/// Distinct purchasing customers for the active order and category context.
 	measure 'Customer Count' =
 			VAR _orders = CALCULATETABLE(VALUES('dev fact_order_items'[order_id]), TREATAS(VALUES('dev fact_orders'[order_id]), 'dev fact_order_items'[order_id]))
-			RETURN CALCULATE(DISTINCTCOUNT('dev fact_orders'[customer_id]), TREATAS(_orders, 'dev fact_orders'[order_id]))
+			RETURN CALCULATE(DISTINCTCOUNT('dev fact_orders'[customer_unique_id]), TREATAS(_orders, 'dev fact_orders'[order_id]))
 		formatString: #,##0
 		lineageTag: 312672fa-f81c-4ca0-bb8c-7a340e6b5f7d
 
@@ -56,52 +56,85 @@ table 'dev fact_orders'
 		formatString: #,##0.00
 		lineageTag: b091314e-4d71-4445-bab5-62685b0e32fe
 
-	/// Scenario baseline; this is historical listed-price revenue.
-	measure 'Baseline Revenue' = [Revenue]
-		formatString: #,##0.00
-		lineageTag: 9401237a-7f8b-4d69-adf7-fb41a854d020
+	/// Distinct people (customer_unique_id), not order-level customer_id.
+	measure 'Unique Customers' = DISTINCTCOUNT('dev fact_orders'[customer_unique_id])
+		formatString: #,##0
+		lineageTag: db0c653a-d73c-4c3e-b61b-af6646e9964d
 
-	/// Assumed COGS rate for scenario analysis; this is not an Olist historical field.
-	measure 'COGS Assumption' = 0.65
-		formatString: 0%
-		lineageTag: 4562e903-5263-4a40-989f-33788589221d
+	/// Delivered orders inside the analysis window.
+	measure 'Delivered Orders' = CALCULATE(COUNTROWS('dev fact_orders'), 'dev fact_orders'[is_delivered] = TRUE(), 'dev fact_orders'[is_in_analysis_window] = TRUE())
+		formatString: #,##0
+		lineageTag: 39807e4e-5bed-437d-91f4-3b0872ca22f6
 
-	/// Selected what-if discount rate; defaults to the lowest scenario when no scenario is selected.
-	measure 'Selected Discount Rate' = SELECTEDVALUE('Pricing Scenarios'[Discount Rate], 0.05)
-		formatString: 0%
-		lineageTag: ff976caa-ffff-4cb2-bbc4-4358d9cc21da
+	/// Orders delivered after the estimated date, inside the analysis window.
+	measure 'Late Orders' = CALCULATE(COUNTROWS('dev fact_orders'), 'dev fact_orders'[is_late] = TRUE(), 'dev fact_orders'[is_in_analysis_window] = TRUE())
+		formatString: #,##0
+		lineageTag: 25b4d237-94a1-4bf9-bbf5-059bc4948cde
 
-	/// Assumed order-volume response equal to 1.5 times the selected discount rate.
-	measure 'Volume Uplift Assumption' = [Selected Discount Rate] * 1.5
-		formatString: 0%
-		lineageTag: 94659676-7af0-4f96-b4fa-2c45e079d466
-
-	/// Discounted listed-price revenue after the assumed volume uplift.
-	measure 'Simulated Revenue' = [Baseline Revenue] * (1 - [Selected Discount Rate]) * (1 + [Volume Uplift Assumption])
-		formatString: #,##0.00
-		lineageTag: 61bf745b-86a8-469e-8ff6-6239f156e6c2
-
-	/// Estimated COGS after the assumed change in order volume; not a historical Olist cost.
-	measure 'Estimated COGS' = [Baseline Revenue] * (1 + [Volume Uplift Assumption]) * [COGS Assumption]
-		formatString: #,##0.00
-		lineageTag: c008ee82-ce1f-4e2b-aa20-cff0a3c58ec1
-
-	/// Scenario profit after simulated discount, volume, and estimated COGS assumptions.
-	measure 'Simulated Profit' = [Simulated Revenue] - [Estimated COGS]
-		formatString: #,##0.00
-		lineageTag: a9e9920a-9a22-4acc-8f03-da5e70e9b22a
-
-	/// Scenario profit as a share of simulated revenue.
-	measure 'Simulated Profit Margin' = DIVIDE([Simulated Profit], [Simulated Revenue])
+	/// Late orders as a share of delivered orders.
+	measure 'Late Delivery Rate' = DIVIDE([Late Orders], [Delivered Orders])
 		formatString: 0.0%
-		lineageTag: 6390e8e5-0220-432e-a332-ac4513053f55
+		lineageTag: 8f739572-7815-4651-8fa2-1da3804b8b23
 
-	/// Incremental volume required to preserve baseline profit; blank when a discounted unit has no positive contribution margin.
-	measure 'Break-even Volume Uplift' =
-			VAR _contribution = (1 - [Selected Discount Rate]) - [COGS Assumption]
-			RETURN IF(_contribution <= 0, BLANK(), DIVIDE(1 - [COGS Assumption], _contribution) - 1)
+	/// Average review score of on-time deliveries.
+	measure 'Avg Review (On Time)' = CALCULATE(AVERAGE('dev fact_orders'[review_score]), 'dev fact_orders'[is_late] = FALSE(), 'dev fact_orders'[is_delivered] = TRUE(), 'dev fact_orders'[is_in_analysis_window] = TRUE())
+		formatString: 0.00
+		lineageTag: 40652260-150b-4792-96a0-6e2afe131ac1
+
+	/// Average review score of late deliveries.
+	measure 'Avg Review (Late)' = CALCULATE(AVERAGE('dev fact_orders'[review_score]), 'dev fact_orders'[is_late] = TRUE(), 'dev fact_orders'[is_in_analysis_window] = TRUE())
+		formatString: 0.00
+		lineageTag: 897437f8-bfec-4297-ad7f-184f2980ad11
+
+	/// Share of 1-2 star reviews on delivered orders that came from late deliveries.
+	measure 'Late Share of Bad Reviews' = DIVIDE(CALCULATE(COUNTROWS('dev fact_orders'), 'dev fact_orders'[is_late] = TRUE(), 'dev fact_orders'[review_score] IN {1, 2}, 'dev fact_orders'[is_in_analysis_window] = TRUE()), CALCULATE(COUNTROWS('dev fact_orders'), 'dev fact_orders'[is_delivered] = TRUE(), 'dev fact_orders'[review_score] IN {1, 2}, 'dev fact_orders'[is_in_analysis_window] = TRUE()))
 		formatString: 0.0%
-		lineageTag: 1b6d4349-4f66-4f5c-a8ed-d13a3e4d7c23
+		lineageTag: 8fa9f6d2-ce51-4a4f-ac53-4a883895cf70
+
+	/// Average days from purchase to the estimated delivery date.
+	measure 'Avg Promised Days' = CALCULATE(AVERAGE('dev fact_orders'[promised_days]), 'dev fact_orders'[is_delivered] = TRUE(), 'dev fact_orders'[is_in_analysis_window] = TRUE())
+		formatString: 0.0
+		lineageTag: 6bc453e0-0571-458d-8343-598ee28cb07b
+
+	/// Average days from purchase to delivery.
+	measure 'Avg Actual Delivery Days' = CALCULATE(AVERAGE('dev fact_orders'[delivery_days]), 'dev fact_orders'[is_delivered] = TRUE(), 'dev fact_orders'[is_in_analysis_window] = TRUE())
+		formatString: 0.0
+		lineageTag: 639627fc-1aea-446c-8b54-c8fccc453c42
+
+	/// Delivered orders handed to the carrier after the seller's shipping limit.
+	measure 'Seller Handoff Late Rate' = DIVIDE(CALCULATE(COUNTROWS('dev fact_orders'), 'dev fact_orders'[is_seller_handoff_late] = TRUE(), 'dev fact_orders'[is_delivered] = TRUE(), 'dev fact_orders'[is_in_analysis_window] = TRUE()), CALCULATE(COUNTROWS('dev fact_orders'), NOT ISBLANK('dev fact_orders'[is_seller_handoff_late]), 'dev fact_orders'[is_delivered] = TRUE(), 'dev fact_orders'[is_in_analysis_window] = TRUE()))
+		formatString: 0.0%
+		lineageTag: 454a0c62-999a-4ffa-bc3e-e7ad3f991a85
+
+	/// Share of revenue from customers' first purchase day.
+	measure 'New Customer Revenue Share' = DIVIDE(CALCULATE([Revenue], 'dev fact_orders'[customer_type] = "New"), [Revenue])
+		formatString: 0.0%
+		lineageTag: c702b607-e96f-4534-8fc2-b18cd7914d4b
+
+	/// Freight charged as a share of item value, delivered orders in the analysis window.
+	measure 'Freight % of Item Value' = CALCULATE(DIVIDE(SUM('dev fact_orders'[freight_value]), SUM('dev fact_orders'[items_value])), 'dev fact_orders'[is_delivered] = TRUE(), 'dev fact_orders'[is_in_analysis_window] = TRUE())
+		formatString: 0.0%
+		lineageTag: 77cc1e16-4be8-4e39-9ad6-f7103a60c0c0
+
+	/// Average freight charged per delivered order.
+	measure 'Avg Freight per Order' = CALCULATE(AVERAGE('dev fact_orders'[freight_value]), 'dev fact_orders'[is_delivered] = TRUE(), 'dev fact_orders'[is_in_analysis_window] = TRUE())
+		formatString: #,##0.00
+		lineageTag: 90ef3987-19e9-4ab4-8262-eccb0374758c
+
+	/// Share of delivered orders shipped only by sellers in the customer's state.
+	measure 'Local Seller Order Share' = DIVIDE(CALCULATE(COUNTROWS('dev fact_orders'), 'dev fact_orders'[seller_origin] = "Same state", 'dev fact_orders'[is_delivered] = TRUE(), 'dev fact_orders'[is_in_analysis_window] = TRUE()), [Delivered Orders])
+		formatString: 0.0%
+		lineageTag: 29ab9381-e3f8-4146-9398-279c3bdc717c
+
+	/// Share of reviewed orders scoring 1 or 2 stars, any delivery status.
+	measure 'Bad Review Rate' = DIVIDE(CALCULATE(COUNTROWS('dev fact_orders'), 'dev fact_orders'[review_score] IN {1, 2}, 'dev fact_orders'[is_in_analysis_window] = TRUE()), CALCULATE(COUNTROWS('dev fact_orders'), NOT ISBLANK('dev fact_orders'[review_score]), 'dev fact_orders'[is_in_analysis_window] = TRUE()))
+		formatString: 0.0%
+		lineageTag: 6da058f1-372d-44d3-b51e-84be7a3c281a
+
+	/// Share of all 1-2 star reviews falling in the current experience group.
+	measure 'Share of Bad Reviews' = DIVIDE(CALCULATE(COUNTROWS('dev fact_orders'), 'dev fact_orders'[review_score] IN {1, 2}, 'dev fact_orders'[is_in_analysis_window] = TRUE()), CALCULATE(CALCULATE(COUNTROWS('dev fact_orders'), 'dev fact_orders'[review_score] IN {1, 2}, 'dev fact_orders'[is_in_analysis_window] = TRUE()), REMOVEFILTERS('dev fact_orders'[experience_group], 'dev fact_orders'[experience_group_sort])))
+		formatString: 0.0%
+		lineageTag: a093e136-dd6b-481c-b5a6-35de5458c572
 
 	column order_id
 		dataType: string
@@ -253,11 +286,242 @@ table 'dev fact_orders'
 
 		annotation PBI_FormatHint = {"isGeneralNumber":true}
 
-	column 'Delivery Bucket'
+	column customer_unique_id
 		dataType: string
-		lineageTag: 43b10b5d-b935-4188-a460-c906bf326c0a
+		lineageTag: b2eaeb50-54d6-4de5-8f7e-9e661cd37c3f
 		summarizeBy: none
-		sourceColumn: Delivery Bucket
+		sourceColumn: customer_unique_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column customer_state
+		dataType: string
+		lineageTag: 2745cf44-d4b7-4f03-bea2-b6853f228032
+		summarizeBy: none
+		sourceColumn: customer_state
+
+		annotation SummarizationSetBy = Automatic
+
+	column purchase_month
+		dataType: dateTime
+		formatString: Short Date
+		lineageTag: d468c358-3433-4a1b-b393-7a519a762dd0
+		summarizeBy: none
+		sourceColumn: purchase_month
+
+		variation Variation
+			isDefault
+			relationship: d40ea632-8d7e-4c86-96e3-38ae4a3ab3be
+			defaultHierarchy: LocalDateTable_faa9f15b-fd19-4f88-8383-63860e04662d.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column item_count
+		dataType: int64
+		formatString: 0
+		lineageTag: 66f49477-2f0f-4816-aa4a-b41c53d89880
+		summarizeBy: sum
+		sourceColumn: item_count
+
+		annotation SummarizationSetBy = Automatic
+
+	column seller_count
+		dataType: int64
+		formatString: 0
+		lineageTag: 5cd4cce5-596f-4f17-9487-590acf841837
+		summarizeBy: sum
+		sourceColumn: seller_count
+
+		annotation SummarizationSetBy = Automatic
+
+	column items_value
+		dataType: double
+		formatString: #,##0.00
+		lineageTag: 12cb3c67-246f-45f5-96f7-1cf6a34c265d
+		summarizeBy: sum
+		sourceColumn: items_value
+
+		annotation SummarizationSetBy = Automatic
+
+	column freight_value
+		dataType: double
+		formatString: #,##0.00
+		lineageTag: ed8dab1c-a0c4-47ea-a37e-a80014692b51
+		summarizeBy: sum
+		sourceColumn: freight_value
+
+		annotation SummarizationSetBy = Automatic
+
+	column promised_days
+		dataType: int64
+		formatString: 0
+		lineageTag: 57b41730-9e9e-4ecd-b676-1089ae3514c6
+		summarizeBy: sum
+		sourceColumn: promised_days
+
+		annotation SummarizationSetBy = Automatic
+
+	column is_delivered
+		dataType: boolean
+		lineageTag: 6b52734e-07b9-405d-bf62-42b6eb305ecb
+		summarizeBy: none
+		sourceColumn: is_delivered
+
+		annotation SummarizationSetBy = Automatic
+
+	column days_late
+		dataType: int64
+		formatString: 0
+		lineageTag: dbb3a72f-d910-4229-bb9f-97a3b8a6079e
+		summarizeBy: sum
+		sourceColumn: days_late
+
+		annotation SummarizationSetBy = Automatic
+
+	column is_seller_handoff_late
+		dataType: boolean
+		lineageTag: 1ee3a882-6f96-4e4b-98de-a291b1bd7e00
+		summarizeBy: none
+		sourceColumn: is_seller_handoff_late
+
+		annotation SummarizationSetBy = Automatic
+
+	column is_cross_state
+		dataType: boolean
+		lineageTag: 4dcc21bc-4cdc-4b41-af2a-39b648856d31
+		summarizeBy: none
+		sourceColumn: is_cross_state
+
+		annotation SummarizationSetBy = Automatic
+
+	column is_in_analysis_window
+		dataType: boolean
+		lineageTag: dcd87c78-0fb0-4fbd-b921-54abe1a5da20
+		summarizeBy: none
+		sourceColumn: is_in_analysis_window
+
+		annotation SummarizationSetBy = Automatic
+
+	column is_late
+		dataType: boolean
+		lineageTag: f5895a32-2eea-4d4a-85b7-50efe7528057
+		summarizeBy: none
+		sourceColumn: is_late
+
+		annotation SummarizationSetBy = Automatic
+
+	column shipping_route
+		dataType: string
+		lineageTag: 18e36df5-f7c7-40a9-9356-d49216846a13
+		summarizeBy: none
+		sourceColumn: shipping_route
+
+		annotation SummarizationSetBy = Automatic
+
+	column delivery_status
+		dataType: string
+		lineageTag: 7e3dc180-5a47-4e3a-9c31-93d1518c597a
+		summarizeBy: none
+		sourceColumn: delivery_status
+
+		annotation SummarizationSetBy = Automatic
+
+	column delivery_timing_bucket
+		dataType: string
+		lineageTag: 0d8b118a-3945-4e45-9bf8-4573ff20b633
+		summarizeBy: none
+		sourceColumn: delivery_timing_bucket
+		sortByColumn: delivery_timing_sort
+
+		annotation SummarizationSetBy = Automatic
+
+	column delivery_timing_sort
+		dataType: int64
+		formatString: 0
+		lineageTag: 1f7f8e36-11e6-4efc-be17-5a923132c4e8
+		summarizeBy: sum
+		sourceColumn: delivery_timing_sort
+
+		annotation SummarizationSetBy = Automatic
+
+	column customer_order_number
+		dataType: int64
+		formatString: 0
+		lineageTag: 14124d96-8a9b-4efc-a796-55e26b6c6667
+		summarizeBy: sum
+		sourceColumn: customer_order_number
+
+		annotation SummarizationSetBy = Automatic
+
+	column customer_region
+		dataType: string
+		lineageTag: 15cd7b33-b982-4978-9ba4-d8869eb3bbce
+		summarizeBy: none
+		sourceColumn: customer_region
+		sortByColumn: customer_region_sort
+
+		annotation SummarizationSetBy = Automatic
+
+	column customer_region_sort
+		dataType: int64
+		formatString: 0
+		lineageTag: 25b6d657-ac7e-4363-a653-eb065d07ff64
+		summarizeBy: sum
+		sourceColumn: customer_region_sort
+
+		annotation SummarizationSetBy = Automatic
+
+	column seller_origin
+		dataType: string
+		lineageTag: 96683394-4492-4833-91c7-e385172c5f4d
+		summarizeBy: none
+		sourceColumn: seller_origin
+
+		annotation SummarizationSetBy = Automatic
+
+	column experience_group
+		dataType: string
+		lineageTag: 20d957ed-1778-48c5-bbcd-0ccd75bbab5d
+		summarizeBy: none
+		sourceColumn: experience_group
+		sortByColumn: experience_group_sort
+
+		annotation SummarizationSetBy = Automatic
+
+	column experience_group_sort
+		dataType: int64
+		formatString: 0
+		lineageTag: fe979c58-ff0b-44bf-a7e0-6856e89fad97
+		summarizeBy: sum
+		sourceColumn: experience_group_sort
+
+		annotation SummarizationSetBy = Automatic
+
+	column order_value_band
+		dataType: string
+		lineageTag: 8f1f68f4-2d61-434c-9802-a111df691e9a
+		summarizeBy: none
+		sourceColumn: order_value_band
+		sortByColumn: order_value_band_sort
+
+		annotation SummarizationSetBy = Automatic
+
+	column order_value_band_sort
+		dataType: int64
+		formatString: 0
+		lineageTag: f7fe76c8-0d6a-4911-a07d-20be43b58ff0
+		summarizeBy: sum
+		sourceColumn: order_value_band_sort
+
+		annotation SummarizationSetBy = Automatic
+
+	column customer_type
+		dataType: string
+		lineageTag: 852a6c9f-967e-4992-baaf-07cc9c5799b7
+		summarizeBy: none
+		sourceColumn: customer_type
 
 		annotation SummarizationSetBy = Automatic
 
@@ -265,11 +529,10 @@ table 'dev fact_orders'
 		mode: import
 		source =
 				let
-				    Source = PostgreSQL.Database("localhost", "olist_dw"),
-				    dev_fact_orders = Source{[Schema="dev",Item="fact_orders"]}[Data],
-				    #"Added Conditional Column" = Table.AddColumn(dev_fact_orders, "Delivery Bucket", each if [delivery_days_vs_estimated] > 0 then "Early" else if [delivery_days_vs_estimated] = 0 then "On Time" else "Late")
+				    Source = PostgreSQL.Database("localhost:5434", "olist_dw"),
+				    dev_fact_orders = Source{[Schema="dev",Item="fact_orders"]}[Data]
 				in
-				    #"Added Conditional Column"
+				    dev_fact_orders
 
 	annotation PBI_ResultType = Table
 

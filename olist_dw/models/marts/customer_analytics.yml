@@ -1,22 +1,16 @@
 version: 2
 
 models:
-  - name: customer_rfm
+  - name: customer_summary
     description: >-
-      One row per underlying customer, using customer_unique_id when available.
-      RFM covers delivered orders with a non-null, non-negative total payment
-      value. The reproducible reference date is one day after the maximum
-      qualifying purchase date in the current dataset. Monetary is the sum of
-      the existing per-order total_payment_value and is not joined to item rows.
-      Orders with cancelled, unavailable, or other non-delivered statuses,
-      missing purchase timestamps, missing payment totals, or negative payment
-      totals are excluded. The source contains no explicit refund field; a
-      negative net order payment is excluded rather than interpreted as a
-      customer refund. customer_id is used only as a fallback if
-      customer_unique_id is blank.
+      One row per customer_unique_id with lifetime metrics from delivered
+      orders that have a non-negative payment total. A repeat purchase is a
+      second distinct purchase DAY, so orders split across sellers in one
+      session are not counted as a return visit. The reference date is the last
+      qualifying purchase date plus one day; 90/180-day repeat flags should
+      only be averaged over customers whose matching is_observed flag is true.
     columns:
       - name: customer_unique_id
-        description: Stable underlying-customer key, with customer_id fallback only when necessary.
         tests:
           - not_null
           - unique
@@ -24,49 +18,108 @@ models:
               arguments:
                 to: ref('dim_customers')
                 field: customer_unique_id
-      - name: reference_date
-        description: Dataset maximum qualifying purchase date plus one day.
+      - name: first_purchase_date
         tests:
           - not_null
-      - name: recency_days
-        description: Calendar days from the last qualifying purchase to reference_date.
+      - name: cohort_month
+        description: Month of the first qualifying purchase.
         tests:
           - not_null
-      - name: frequency
-        description: Distinct qualifying order count, not item-line count.
+      - name: order_count
+        description: Distinct qualifying orders.
+        tests:
+          - not_null
+      - name: purchase_day_count
+        description: Distinct days with a qualifying order.
         tests:
           - not_null
       - name: monetary
-        description: Sum of qualifying orders' total_payment_value, once per order.
+        description: Sum of qualifying orders' total_payment_value.
         tests:
           - not_null
-      - name: recency_score
-        description: Five-point percentile score; recent customers score higher and tied recencies share a score.
+      - name: days_to_second_purchase
+        description: Days from first to second purchase day; null for one-time customers.
+      - name: returned_within_90d
+        tests:
+          - not_null
+      - name: returned_within_180d
+        tests:
+          - not_null
+      - name: is_observed_90d
+        description: More than 90 days have passed since the first purchase.
+      - name: is_observed_180d
+        description: More than 180 days have passed since the first purchase.
+
+  - name: customer_rfm
+    description: >-
+      Customer segmentation built on customer_summary. Frequency is reduced to
+      repeat vs one-time because 97% of customers buy once. Recency splits at
+      180 days; value bands are monetary terciles. Every customer gets exactly
+      one segment and a recommended action.
+    columns:
+      - name: customer_unique_id
+        tests:
+          - not_null
+          - unique
+      - name: recency_days
+        tests:
+          - not_null
+      - name: frequency
+        description: Distinct qualifying orders.
+        tests:
+          - not_null
+      - name: purchase_day_count
+        tests:
+          - not_null
+      - name: monetary
+        tests:
+          - not_null
+      - name: recency_band
         tests:
           - accepted_values:
               arguments:
-                values: [1, 2, 3, 4, 5]
-      - name: frequency_score
-        description: Frequency tiers calibrated to the observed concentration of one-order customers; ties remain together.
+                values: ['0-90 days', '91-180 days', '181-365 days', '365+ days']
+      - name: value_band
+        description: Monetary tercile.
         tests:
           - accepted_values:
               arguments:
-                values: [1, 2, 3, 4, 5]
-      - name: monetary_score
-        description: Five-point percentile score; higher spend scores higher and tied values share a score.
-        tests:
-          - accepted_values:
-              arguments:
-                values: [1, 2, 3, 4, 5]
+                values: ['High', 'Mid', 'Low']
       - name: rfm_segment
-        description: Mutually exclusive deterministic customer segment; every eligible customer is assigned exactly one.
         tests:
+          - not_null
           - accepted_values:
               arguments:
                 values:
-                  - Champions
-                  - Loyal Customers
-                  - Potential Loyalists
-                  - At Risk
-                  - Hibernating
+                  - Active Repeat
+                  - Lapsed Repeat
+                  - New High-Value
+                  - New Standard
+                  - Lapsed High-Value
+                  - Lapsed Standard
+      - name: recommended_action
+        tests:
+          - not_null
 
+  - name: customer_cohort_retention
+    description: >-
+      One row per first-purchase cohort month and months since first purchase,
+      for cohorts inside the analysis window. Month 0 is the cohort itself.
+      Uses the same qualifying orders as customer_summary.
+    columns:
+      - name: cohort_month
+        tests:
+          - not_null
+      - name: month_number
+        tests:
+          - not_null
+      - name: active_customers
+        tests:
+          - not_null
+      - name: cohort_size
+        tests:
+          - not_null
+      - name: retention_rate
+        description: active_customers / cohort_size.
+        tests:
+          - not_null

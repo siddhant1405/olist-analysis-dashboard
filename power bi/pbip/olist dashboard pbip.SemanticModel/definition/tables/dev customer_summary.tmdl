@@ -1,0 +1,249 @@
+table 'dev customer_summary'
+	lineageTag: 2c97f8d4-ac96-463d-84af-f1b11c2542f6
+
+	/// Customers with at least one delivered, paid order.
+	measure 'Purchasing Customers' = COUNTROWS('dev customer_summary')
+		formatString: #,##0
+		lineageTag: 6633780f-84cc-43ab-89b1-1b864598878f
+
+	/// Share of customers with exactly one delivered order.
+	measure 'One-time Customer Share' = DIVIDE(CALCULATE(COUNTROWS('dev customer_summary'), 'dev customer_summary'[order_count] = 1), COUNTROWS('dev customer_summary'))
+		formatString: 0.0%
+		lineageTag: e3eac846-630e-40aa-8804-7bf5b9f0e57a
+
+	/// Customers who made a second purchase on a different day within 180 days, among customers observed for 180+ days.
+	measure 'Repeat Rate 180d' = DIVIDE(CALCULATE(COUNTROWS('dev customer_summary'), 'dev customer_summary'[returned_within_180d] = TRUE(), 'dev customer_summary'[is_observed_180d] = TRUE()), CALCULATE(COUNTROWS('dev customer_summary'), 'dev customer_summary'[is_observed_180d] = TRUE()))
+		formatString: 0.00%
+		lineageTag: 6326d55e-96f1-4688-a07c-0b344b45ec3b
+
+	/// Median days between first and second purchase day, for repeat customers.
+	measure 'Median Days to 2nd Purchase' = MEDIAN('dev customer_summary'[days_to_second_purchase])
+		formatString: 0
+		lineageTag: 136024bf-36ce-4d3d-b3ed-1f28359856d1
+
+	column customer_unique_id
+		dataType: string
+		lineageTag: 08fda213-d3d1-4cfe-81fd-730b358a4007
+		summarizeBy: none
+		sourceColumn: customer_unique_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column reference_date
+		dataType: dateTime
+		formatString: Short Date
+		lineageTag: 5e0e6bbd-03c2-46a7-9d17-997aaab88b28
+		summarizeBy: none
+		sourceColumn: reference_date
+
+		variation Variation
+			isDefault
+			relationship: 8aae1d4b-8766-426c-847d-b90be05d83d6
+			defaultHierarchy: LocalDateTable_f0ddc1bf-08e1-4a47-bc08-b0d33ccb06cf.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column first_purchase_date
+		dataType: dateTime
+		formatString: Short Date
+		lineageTag: 615120d0-45d5-44be-9180-9c7dd51a53c8
+		summarizeBy: none
+		sourceColumn: first_purchase_date
+
+		variation Variation
+			isDefault
+			relationship: 33d3ceeb-d190-4733-b3ce-06b2762da238
+			defaultHierarchy: LocalDateTable_e1dea15d-fa0d-4caf-ad80-8ff1afc82caf.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column cohort_month
+		dataType: dateTime
+		formatString: Short Date
+		lineageTag: f0ff4063-1933-4136-b091-3176e07e4a47
+		summarizeBy: none
+		sourceColumn: cohort_month
+
+		variation Variation
+			isDefault
+			relationship: b7566537-5ff0-4207-a3b6-ab3e714a1fd6
+			defaultHierarchy: LocalDateTable_ac187759-185c-4959-8526-62c5357cf653.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column second_purchase_date
+		dataType: dateTime
+		formatString: Short Date
+		lineageTag: a6e8de63-f203-4aa0-a731-f53af85e985c
+		summarizeBy: none
+		sourceColumn: second_purchase_date
+
+		variation Variation
+			isDefault
+			relationship: 91c72e6a-fcd1-403d-8b30-f5711e0dca38
+			defaultHierarchy: LocalDateTable_c2c211b6-a3c6-45a6-97df-a741822039ce.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column last_purchase_date
+		dataType: dateTime
+		formatString: Short Date
+		lineageTag: d3571133-f9a9-4aed-9987-de7b706b1315
+		summarizeBy: none
+		sourceColumn: last_purchase_date
+
+		variation Variation
+			isDefault
+			relationship: cf6d822f-b8b6-44dc-be43-ec80580992c1
+			defaultHierarchy: LocalDateTable_3cb82547-a9ee-4d0b-9721-7cea5df7e68e.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column order_count
+		dataType: int64
+		formatString: 0
+		lineageTag: d439d66e-fcf0-406c-b545-7461e15ee6f9
+		summarizeBy: sum
+		sourceColumn: order_count
+
+		annotation SummarizationSetBy = Automatic
+
+	column purchase_day_count
+		dataType: int64
+		formatString: 0
+		lineageTag: 1e3a6534-c672-4847-8768-7777673b0ccd
+		summarizeBy: sum
+		sourceColumn: purchase_day_count
+
+		annotation SummarizationSetBy = Automatic
+
+	column monetary
+		dataType: double
+		formatString: #,##0.00
+		lineageTag: ce9416be-d7c9-4ea8-85de-1442eb25fffc
+		summarizeBy: sum
+		sourceColumn: monetary
+
+		annotation SummarizationSetBy = Automatic
+
+	column recency_days
+		dataType: int64
+		formatString: 0
+		lineageTag: c491e84e-fa33-4436-9def-c5db4542552a
+		summarizeBy: sum
+		sourceColumn: recency_days
+
+		annotation SummarizationSetBy = Automatic
+
+	column observed_days
+		dataType: int64
+		formatString: 0
+		lineageTag: d07f584d-2a30-4b9b-92f4-958eb2da3473
+		summarizeBy: sum
+		sourceColumn: observed_days
+
+		annotation SummarizationSetBy = Automatic
+
+	column days_to_second_purchase
+		dataType: int64
+		formatString: 0
+		lineageTag: 17ce17bf-0538-43ea-a2a2-a49b1e14dd17
+		summarizeBy: sum
+		sourceColumn: days_to_second_purchase
+
+		annotation SummarizationSetBy = Automatic
+
+	column is_repeat_customer
+		dataType: boolean
+		lineageTag: d6dd8b77-f191-47a3-941d-9b11ee23b6cc
+		summarizeBy: none
+		sourceColumn: is_repeat_customer
+
+		annotation SummarizationSetBy = Automatic
+
+	column returned_within_90d
+		dataType: boolean
+		lineageTag: dbfdc51d-67ee-49fe-9c4e-07e91d0d9114
+		summarizeBy: none
+		sourceColumn: returned_within_90d
+
+		annotation SummarizationSetBy = Automatic
+
+	column returned_within_180d
+		dataType: boolean
+		lineageTag: 9d63297a-6b56-484c-adec-141c1ee4582f
+		summarizeBy: none
+		sourceColumn: returned_within_180d
+
+		annotation SummarizationSetBy = Automatic
+
+	column is_observed_90d
+		dataType: boolean
+		lineageTag: 73228610-45ea-4582-9602-db5cd5808306
+		summarizeBy: none
+		sourceColumn: is_observed_90d
+
+		annotation SummarizationSetBy = Automatic
+
+	column is_observed_180d
+		dataType: boolean
+		lineageTag: a42820ba-1592-434a-bc1d-5ae2c2a8ec73
+		summarizeBy: none
+		sourceColumn: is_observed_180d
+
+		annotation SummarizationSetBy = Automatic
+
+	column first_order_state
+		dataType: string
+		lineageTag: 1a6b98ef-9fa0-4696-933d-f053daebedef
+		summarizeBy: none
+		sourceColumn: first_order_state
+
+		annotation SummarizationSetBy = Automatic
+
+	column first_order_is_late
+		dataType: boolean
+		lineageTag: 29fef9d9-a911-4619-8596-00831b5e2d20
+		summarizeBy: none
+		sourceColumn: first_order_is_late
+
+		annotation SummarizationSetBy = Automatic
+
+	column first_order_delivery
+		dataType: string
+		lineageTag: 5740114c-c306-451b-a058-9278d084e660
+		summarizeBy: none
+		sourceColumn: first_order_delivery
+
+		annotation SummarizationSetBy = Automatic
+
+	column first_order_review_score
+		dataType: int64
+		formatString: 0
+		lineageTag: 31cab992-d50f-4c9d-b74c-7f022ad42c72
+		summarizeBy: sum
+		sourceColumn: first_order_review_score
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'dev customer_summary' = m
+		mode: import
+		source =
+				let
+				    Source = PostgreSQL.Database("localhost:5434", "olist_dw"),
+				    dev_customer_summary = Source{[Schema="dev",Item="customer_summary"]}[Data]
+				in
+				    dev_customer_summary
+
+	annotation PBI_ResultType = Table
+

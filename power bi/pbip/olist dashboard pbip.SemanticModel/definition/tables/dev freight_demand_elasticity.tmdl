@@ -1,0 +1,64 @@
+table 'dev freight_demand_elasticity'
+	lineageTag: 657ae502-afb3-4357-947d-694a3108fa10
+
+	/// Percent change in route orders for a 1% change in weight-adjusted freight.
+	measure 'Freight Elasticity' = MAX('dev freight_demand_elasticity'[freight_elasticity])
+		formatString: 0.00
+		lineageTag: db015228-10c3-4a28-a861-2c2ff58e8287
+
+	column freight_elasticity
+		dataType: double
+		formatString: #,##0.00
+		lineageTag: 21e57e93-32b5-4d40-b1fa-e6264b36eae4
+		summarizeBy: none
+		sourceColumn: freight_elasticity
+
+		annotation SummarizationSetBy = Automatic
+
+	column correlation
+		dataType: double
+		formatString: #,##0.00
+		lineageTag: bd64d9aa-13b8-4595-8766-d85c59540c0c
+		summarizeBy: none
+		sourceColumn: correlation
+
+		annotation SummarizationSetBy = Automatic
+
+	column routes
+		dataType: int64
+		formatString: 0
+		lineageTag: de44202d-1cdb-45b4-8748-dfb0616888a5
+		summarizeBy: none
+		sourceColumn: routes
+
+		annotation SummarizationSetBy = Automatic
+
+	column route_months
+		dataType: int64
+		formatString: 0
+		lineageTag: d9444076-5756-4add-acd8-4a31c985efb4
+		summarizeBy: none
+		sourceColumn: route_months
+
+		annotation SummarizationSetBy = Automatic
+
+	column freight_variation
+		dataType: double
+		formatString: #,##0.00
+		lineageTag: 39c1bf31-c9a5-47be-85b7-6931bf8caf8c
+		summarizeBy: none
+		sourceColumn: freight_variation
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'dev freight_demand_elasticity' = m
+		mode: import
+		source =
+				let
+				    Source = PostgreSQL.Database("localhost:5434", "olist_dw"),
+				    dev_freight_demand_elasticity = Source{[Schema="dev",Item="freight_demand_elasticity"]}[Data]
+				in
+				    dev_freight_demand_elasticity
+
+	annotation PBI_ResultType = Table
+

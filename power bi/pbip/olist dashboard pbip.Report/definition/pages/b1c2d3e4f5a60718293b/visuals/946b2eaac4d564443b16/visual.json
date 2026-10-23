@@ -1,0 +1,57 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.10.0/schema.json",
+  "name": "946b2eaac4d564443b16",
+  "position": {
+    "x": 12,
+    "y": 684,
+    "width": 936,
+    "height": 30,
+    "z": 23000,
+    "tabOrder": 23000
+  },
+  "visual": {
+    "visualType": "textbox",
+    "visualContainerObjects": {
+      "background": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true,
+    "objects": {
+      "general": [
+        {
+          "properties": {
+            "paragraphs": [
+              {
+                "textRuns": [
+                  {
+                    "value": " "
+                  },
+                  {
+                    "value": "A freight subsidy pays off only where freight share is below the break-even line (|elasticity| x commission). Elasticity is estimated at -0.52 from route-level freight changes (range about -0.1 to -1.0); commission is assumed. Population: IBGE 2022 Census.",
+                    "textStyle": {
+                      "fontWeight": "normal",
+                      "fontFamily": "Constantia",
+                      "fontSize": "8pt",
+                      "color": "#6C6C6C"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

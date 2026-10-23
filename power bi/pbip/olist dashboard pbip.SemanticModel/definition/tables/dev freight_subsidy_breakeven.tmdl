@@ -1,0 +1,150 @@
+table 'dev freight_subsidy_breakeven'
+	lineageTag: 917e3696-6b99-4b23-b202-c51a53c11b3e
+
+	/// Freight as a share of item value in the order value band.
+	measure 'Band Freight Share' = DIVIDE(SUM('dev freight_subsidy_breakeven'[freight_value]), SUM('dev freight_subsidy_breakeven'[revenue]))
+		formatString: 0.0%
+		lineageTag: bef5575a-ad91-4950-8ef4-5da74e08066d
+
+	/// A freight subsidy adds profit only below this freight share, if commission is 10%.
+	measure 'Break-even at 10% Commission' = MAX('dev freight_subsidy_breakeven'[breakeven_share_at_10pct])
+		formatString: 0.0%
+		lineageTag: e330aa0b-2779-4ab2-b6ab-4a46d73fef57
+
+	/// A freight subsidy adds profit only below this freight share, if commission is 15%.
+	measure 'Break-even at 15% Commission' = MAX('dev freight_subsidy_breakeven'[breakeven_share_at_15pct])
+		formatString: 0.0%
+		lineageTag: 6a9e208b-12e4-4255-bb7e-0c5266e8a3cb
+
+	/// A freight subsidy adds profit only below this freight share, if commission is 20%.
+	measure 'Break-even at 20% Commission' = MAX('dev freight_subsidy_breakeven'[breakeven_share_at_20pct])
+		formatString: 0.0%
+		lineageTag: dad7c672-3acd-4a2d-8042-8b7af1ce354b
+
+	column customer_region
+		dataType: string
+		lineageTag: ece15438-33d8-441a-966f-e360ce792653
+		summarizeBy: none
+		sourceColumn: customer_region
+		sortByColumn: customer_region_sort
+
+		annotation SummarizationSetBy = Automatic
+
+	column customer_region_sort
+		dataType: int64
+		formatString: 0
+		lineageTag: c94f3655-188d-4fdb-9699-217b3727e848
+		summarizeBy: none
+		sourceColumn: customer_region_sort
+
+		annotation SummarizationSetBy = Automatic
+
+	column order_value_band
+		dataType: string
+		lineageTag: e408f969-3cc5-4a8c-a8d6-711eb04ab62c
+		summarizeBy: none
+		sourceColumn: order_value_band
+		sortByColumn: order_value_band_sort
+
+		annotation SummarizationSetBy = Automatic
+
+	column order_value_band_sort
+		dataType: int64
+		formatString: 0
+		lineageTag: a1418a2b-464e-474f-ada9-a7853c9babcd
+		summarizeBy: none
+		sourceColumn: order_value_band_sort
+
+		annotation SummarizationSetBy = Automatic
+
+	column delivered_orders
+		dataType: int64
+		formatString: 0
+		lineageTag: c7b6a98a-a8a1-4d5a-b1f1-e83aa2caf6ec
+		summarizeBy: sum
+		sourceColumn: delivered_orders
+
+		annotation SummarizationSetBy = Automatic
+
+	column revenue
+		dataType: double
+		formatString: #,##0.00
+		lineageTag: b58e16e0-f6ce-4c62-9446-8f76e5a9465e
+		summarizeBy: sum
+		sourceColumn: revenue
+
+		annotation SummarizationSetBy = Automatic
+
+	column freight_value
+		dataType: double
+		formatString: #,##0.00
+		lineageTag: 8e04a2c9-51db-4b49-978d-3cc26e175efb
+		summarizeBy: sum
+		sourceColumn: freight_value
+
+		annotation SummarizationSetBy = Automatic
+
+	column freight_share
+		dataType: double
+		formatString: 0.0%
+		lineageTag: f51508c2-1628-41b8-b665-03be8dbdb22e
+		summarizeBy: none
+		sourceColumn: freight_share
+
+		annotation SummarizationSetBy = Automatic
+
+	column abs_elasticity
+		dataType: double
+		formatString: #,##0.00
+		lineageTag: 523ade26-f1df-42fc-8411-3ecb4be1bead
+		summarizeBy: none
+		sourceColumn: abs_elasticity
+
+		annotation SummarizationSetBy = Automatic
+
+	column breakeven_share_at_10pct
+		dataType: double
+		formatString: 0.0%
+		lineageTag: d87f9915-8839-4b22-a10c-99520d448d0d
+		summarizeBy: none
+		sourceColumn: breakeven_share_at_10pct
+
+		annotation SummarizationSetBy = Automatic
+
+	column breakeven_share_at_15pct
+		dataType: double
+		formatString: 0.0%
+		lineageTag: 086487e3-7ca0-4457-9e22-cfca392a0be5
+		summarizeBy: none
+		sourceColumn: breakeven_share_at_15pct
+
+		annotation SummarizationSetBy = Automatic
+
+	column breakeven_share_at_20pct
+		dataType: double
+		formatString: 0.0%
+		lineageTag: 313ca737-61e6-4ac1-a2fd-b6738604659d
+		summarizeBy: none
+		sourceColumn: breakeven_share_at_20pct
+
+		annotation SummarizationSetBy = Automatic
+
+	column is_subsidy_profitable
+		dataType: boolean
+		lineageTag: 1c88ce57-bf9a-49d8-9ab7-edc37799abfe
+		summarizeBy: none
+		sourceColumn: is_subsidy_profitable
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'dev freight_subsidy_breakeven' = m
+		mode: import
+		source =
+				let
+				    Source = PostgreSQL.Database("localhost:5434", "olist_dw"),
+				    dev_freight_subsidy_breakeven = Source{[Schema="dev",Item="freight_subsidy_breakeven"]}[Data]
+				in
+				    dev_freight_subsidy_breakeven
+
+	annotation PBI_ResultType = Table
+

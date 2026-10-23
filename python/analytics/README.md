@@ -1,33 +1,51 @@
-# Customer RFM analysis
+# Customer analytics
 
-The `customer_rfm` mart produces one row per underlying customer. It uses
-`customer_unique_id` to combine repeat purchases across order-level customer
-IDs, falling back to `customer_id` only if the unique key is blank. RFM is
-calculated from delivered orders in `fact_orders`; it does not join item rows
-or payment rows into the customer aggregation. Monetary value is the existing
-per-order `total_payment_value`, counted once per order.
+## Why the segmentation changed
 
-The reproducible reference date is the maximum qualifying purchase date plus
-one day. Cancelled and other non-delivered orders, missing purchase dates,
-missing payment totals, and negative order totals are excluded. The source has
-no explicit refund indicator, so negative values are excluded rather than
-assumed to be refunds. In the inspected CSV snapshot, the reference date was
-2018-08-30; one delivered order with no payment summary was excluded.
+97% of customers place a single delivered order, so a 1-5 frequency score puts
+almost everyone in the same bucket and classic RFM segments ("Champions",
+"Loyal Customers") describe a few dozen people. The segmentation now treats
+frequency as repeat vs one-time and splits customers by recency and value.
 
-Recency and monetary scores use `PERCENT_RANK`, preserving ties, with values
-clamped to 1-5. Frequency tiers are explicit because 90,556 of 93,357 eligible
-customers had one qualifying order: 1 order maps to 1, 2 to 2, 3 to 3, 4 to 4,
-and 5 or more to 5.
+## Definitions
 
-The mutually exclusive segment rules are applied in this order:
+All customer models use delivered orders with a non-negative payment total,
+keyed on `customer_unique_id` (Olist issues a new `customer_id` for every
+order).
 
-1. Champions: R >= 4, F >= 4, M >= 4.
-2. Loyal Customers: R >= 3, F >= 3, M >= 3, excluding Champions.
-3. Potential Loyalists: R >= 4, excluding earlier segments.
-4. At Risk: R <= 2 and (F >= 2 or M >= 4), excluding earlier segments.
-5. Hibernating: all remaining eligible customers.
+- **Repeat purchase**: a second distinct purchase *day*. About 28% of apparent
+  repeat customers only placed several orders on one day, usually one checkout
+  split across sellers.
+- **Repeat rate (180d)**: customers with a second purchase day within 180 days
+  of their first, among customers whose first purchase is more than 180 days
+  before the reference date. Recent customers have not had time to return, so
+  including them understates the rate.
+- **Reference date**: last qualifying purchase date plus one day.
+- 76% of second purchases happen within 180 days (median 74 days), so 180 days
+  separates active from lapsed customers.
 
-The inspected raw-CSV snapshot contains 93,357 eligible customers: Champions
-32, Loyal Customers 125, Potential Loyalists 37,198, At Risk 14,799, and
-Hibernating 41,203. These counts should be regenerated against the active
-database before use in customer campaigns.
+## Segments (`customer_rfm`)
+
+Value bands are monetary terciles. Rules apply in order:
+
+| Segment | Rule | Recommended action |
+|---|---|---|
+| Active Repeat | 2+ purchase days, last purchase within 180 days | Protect: loyalty perks and priority service |
+| Lapsed Repeat | 2+ purchase days, last purchase over 180 days ago | Win back with offers based on past categories |
+| New High-Value | One purchase day within 180 days, top tercile | Drive a second purchase within 90 days |
+| New Standard | One purchase day within 180 days | Low-cost automated nudge |
+| Lapsed High-Value | One purchase day over 180 days ago, top tercile | Selective win-back; A/B test the payback |
+| Lapsed Standard | Everyone else | Exclude from paid campaigns |
+
+## Related models
+
+- `customer_summary`: one row per customer with lifetime metrics and the
+  90/180-day repeat flags.
+- `customer_cohort_retention`: share of each first-purchase cohort that buys
+  again N months later.
+- `seller_scorecard`: per-seller late rate, handoff lateness, reviews and a
+  performance tier.
+- `region_summary`: one row per state with population, customers per 100k,
+  freight share, late rate and local-seller share.
+- `freight_demand_elasticity` and `freight_subsidy_breakeven`: freight demand
+  sensitivity and where a freight subsidy would pay for itself.

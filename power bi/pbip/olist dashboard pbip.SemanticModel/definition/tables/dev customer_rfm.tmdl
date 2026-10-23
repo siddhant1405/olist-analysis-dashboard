@@ -1,21 +1,34 @@
 table 'dev customer_rfm'
-	lineageTag: 0ab390ba-6002-43da-a3c7-1e5538209f21
+	lineageTag: e6c01646-4ca9-4c79-9054-2f703888359e
 
+	/// Customers included in the segmentation.
 	measure 'Eligible Customer Count' = DISTINCTCOUNT('dev customer_rfm'[customer_unique_id])
 		formatString: #,##0
-		lineageTag: 6d3a5650-851e-41d2-b10b-8b3841bd2079
+		lineageTag: 24d0cc26-c4f5-4da8-83ec-85dbd1e5ece1
 
-	measure 'RFM Customer Share' = DIVIDE([Eligible Customer Count], CALCULATE([Eligible Customer Count], REMOVEFILTERS('dev customer_rfm'[rfm_segment])))
+	/// Share of all segmented customers.
+	measure 'RFM Customer Share' = DIVIDE([Eligible Customer Count], CALCULATE([Eligible Customer Count], REMOVEFILTERS('dev customer_rfm')))
 		formatString: 0.0%
-		lineageTag: c415405d-fcbe-45b2-91f4-f5a9b4dad034
+		lineageTag: ec5a0a33-1a75-430c-85b6-472df165aff0
 
+	/// Lifetime payment value of the customers in context.
 	measure 'RFM Monetary Contribution' = SUM('dev customer_rfm'[monetary])
 		formatString: #,##0.00
-		lineageTag: 7a2974e6-d3df-4f25-93c0-0f98a04c6414
+		lineageTag: ec1e4f69-97aa-4277-a1f8-f1d2bbe05626
+
+	/// Share of all customer lifetime payment value.
+	measure 'RFM Revenue Share' = DIVIDE([RFM Monetary Contribution], CALCULATE([RFM Monetary Contribution], REMOVEFILTERS('dev customer_rfm')))
+		formatString: 0.0%
+		lineageTag: b927b875-8d0d-4b76-a57e-f64d4d13f65f
+
+	/// Average lifetime payment value per customer.
+	measure 'Avg Customer Value' = AVERAGE('dev customer_rfm'[monetary])
+		formatString: #,##0.00
+		lineageTag: cab03d18-3eae-4084-b7a2-1c61984f075e
 
 	column customer_unique_id
 		dataType: string
-		lineageTag: 1a2b3775-6caa-47ca-b4ce-867ed6fd3cf4
+		lineageTag: 3a70c76d-361f-4731-a8f1-7e29eaf77b26
 		summarizeBy: none
 		sourceColumn: customer_unique_id
 
@@ -24,17 +37,24 @@ table 'dev customer_rfm'
 	column reference_date
 		dataType: dateTime
 		formatString: Short Date
-		lineageTag: 267c8142-40db-44fc-b00f-8d89d4b49e8f
+		lineageTag: 171b67c5-7751-4926-9ac5-79e85ffe507b
 		summarizeBy: none
 		sourceColumn: reference_date
 
+		variation Variation
+			isDefault
+			relationship: 0bb36da5-daa3-40f0-9e7c-e88a17609372
+			defaultHierarchy: LocalDateTable_4ac5a7e2-8e14-4f4e-bb3a-efe8b2f8c108.'Date Hierarchy'
+
 		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
 
 	column recency_days
 		dataType: int64
 		formatString: 0
-		lineageTag: 994ad916-5fa4-4d34-89da-755db6f1b8f1
-		summarizeBy: average
+		lineageTag: 393e63bf-6e5e-455b-bc83-a693189b4b1e
+		summarizeBy: sum
 		sourceColumn: recency_days
 
 		annotation SummarizationSetBy = Automatic
@@ -42,61 +62,97 @@ table 'dev customer_rfm'
 	column frequency
 		dataType: int64
 		formatString: 0
-		lineageTag: 078e9099-9350-424b-a9ef-671a48d50dcc
+		lineageTag: d31859a0-afee-45c9-93f3-0de446ba7856
 		summarizeBy: sum
 		sourceColumn: frequency
+
+		annotation SummarizationSetBy = Automatic
+
+	column purchase_day_count
+		dataType: int64
+		formatString: 0
+		lineageTag: e419c4c6-dc0e-49e7-a519-4541e231cfdf
+		summarizeBy: sum
+		sourceColumn: purchase_day_count
 
 		annotation SummarizationSetBy = Automatic
 
 	column monetary
 		dataType: double
 		formatString: #,##0.00
-		lineageTag: 0a4d3185-6ee8-4c4b-9761-6a2e7f10ce95
+		lineageTag: fa16f082-4861-43c6-94c8-d6ded66896d8
 		summarizeBy: sum
 		sourceColumn: monetary
 
 		annotation SummarizationSetBy = Automatic
 
-	column recency_score
-		dataType: int64
-		formatString: 0
-		lineageTag: f547b866-4703-4702-a3fd-288d7e1bc0c0
+	column is_repeat_customer
+		dataType: boolean
+		lineageTag: b10757d7-7b47-460e-bba3-09a0333311e1
 		summarizeBy: none
-		sourceColumn: recency_score
+		sourceColumn: is_repeat_customer
 
 		annotation SummarizationSetBy = Automatic
 
-	column frequency_score
-		dataType: int64
-		formatString: 0
-		lineageTag: 43f43a09-5c80-497f-84bc-e5c1b9a25cd3
-		summarizeBy: none
-		sourceColumn: frequency_score
-
-		annotation SummarizationSetBy = Automatic
-
-	column monetary_score
-		dataType: int64
-		formatString: 0
-		lineageTag: 5aebf108-ffb3-40bc-9115-6bb35a62aeaa
-		summarizeBy: none
-		sourceColumn: monetary_score
-
-		annotation SummarizationSetBy = Automatic
-
-	column rfm_score
+	column recency_band
 		dataType: string
-		lineageTag: bfa55d4a-92f6-4dd8-a7b6-994f8f4a9c50
+		lineageTag: 24e39645-5be9-4fd9-ba9e-d65968fb996f
 		summarizeBy: none
-		sourceColumn: rfm_score
+		sourceColumn: recency_band
+		sortByColumn: recency_band_sort
+
+		annotation SummarizationSetBy = Automatic
+
+	column recency_band_sort
+		dataType: int64
+		formatString: 0
+		lineageTag: af1f5bf2-607f-4ef6-a550-5909023d4d97
+		summarizeBy: sum
+		sourceColumn: recency_band_sort
+
+		annotation SummarizationSetBy = Automatic
+
+	column value_band
+		dataType: string
+		lineageTag: d730cf4f-ee54-4575-abc3-b35242a08def
+		summarizeBy: none
+		sourceColumn: value_band
+		sortByColumn: value_band_sort
+
+		annotation SummarizationSetBy = Automatic
+
+	column value_band_sort
+		dataType: int64
+		formatString: 0
+		lineageTag: 89c27d08-5e24-42a9-b3fb-b3cc607e83aa
+		summarizeBy: sum
+		sourceColumn: value_band_sort
 
 		annotation SummarizationSetBy = Automatic
 
 	column rfm_segment
 		dataType: string
-		lineageTag: 9d740cd2-9ab5-42a1-a6c6-8fad5ac26443
+		lineageTag: 8929bda8-0752-4fce-a166-475d9038376b
 		summarizeBy: none
 		sourceColumn: rfm_segment
+		sortByColumn: rfm_segment_sort
+
+		annotation SummarizationSetBy = Automatic
+
+	column rfm_segment_sort
+		dataType: int64
+		formatString: 0
+		lineageTag: ebca551f-5472-4340-a06f-fe9a7564ff5b
+		summarizeBy: sum
+		sourceColumn: rfm_segment_sort
+
+		annotation SummarizationSetBy = Automatic
+
+	column recommended_action
+		dataType: string
+		lineageTag: 6b7485c1-40a0-4b1b-ba90-f0aaa0cca253
+		summarizeBy: none
+		sourceColumn: recommended_action
 
 		annotation SummarizationSetBy = Automatic
 
@@ -104,9 +160,10 @@ table 'dev customer_rfm'
 		mode: import
 		source =
 				let
-				    Source = PostgreSQL.Database("localhost", "olist_dw"),
+				    Source = PostgreSQL.Database("localhost:5434", "olist_dw"),
 				    dev_customer_rfm = Source{[Schema="dev",Item="customer_rfm"]}[Data]
 				in
 				    dev_customer_rfm
 
 	annotation PBI_ResultType = Table
+

@@ -1,0 +1,158 @@
+table 'dev seller_scorecard'
+	lineageTag: b3330e93-c54a-450f-bde9-fee571032f12
+
+	/// Sellers with delivered orders in the analysis window.
+	measure 'Scored Sellers' = COUNTROWS('dev seller_scorecard')
+		formatString: #,##0
+		lineageTag: 4897de60-ae6f-4673-841c-6287e793004a
+
+	/// Sellers with 30+ orders and a late rate at least twice the platform rate.
+	measure 'High-Risk Sellers' = CALCULATE(COUNTROWS('dev seller_scorecard'), 'dev seller_scorecard'[performance_tier] = "High risk")
+		formatString: #,##0
+		lineageTag: 639ecf06-6c3e-4e69-b0eb-bde78d2a430d
+
+	/// Late seller-orders divided by delivered seller-orders.
+	measure 'Seller Late Rate' = DIVIDE(SUM('dev seller_scorecard'[late_orders]), SUM('dev seller_scorecard'[delivered_orders]))
+		formatString: 0.0%
+		lineageTag: 60136e9b-d533-47f3-8297-91d92bd28bbc
+
+	/// Share of all delivered seller-orders.
+	measure 'Share of Seller Orders' = DIVIDE(SUM('dev seller_scorecard'[delivered_orders]), CALCULATE(SUM('dev seller_scorecard'[delivered_orders]), REMOVEFILTERS('dev seller_scorecard')))
+		formatString: 0.0%
+		lineageTag: c39ac8a1-6c18-4388-a0e2-f7b7549edc72
+
+	/// Share of all late seller-orders.
+	measure 'Share of Late Orders' = DIVIDE(SUM('dev seller_scorecard'[late_orders]), CALCULATE(SUM('dev seller_scorecard'[late_orders]), REMOVEFILTERS('dev seller_scorecard')))
+		formatString: 0.0%
+		lineageTag: 8fd6b17b-188e-4424-a6f4-dc01e3d329d5
+
+	/// Order-weighted average review score.
+	measure 'Seller Avg Review' = DIVIDE(SUMX('dev seller_scorecard', 'dev seller_scorecard'[avg_review_score] * 'dev seller_scorecard'[delivered_orders]), SUM('dev seller_scorecard'[delivered_orders]))
+		formatString: 0.00
+		lineageTag: 955d7cb5-7c59-4a19-9fc9-9eaa2f8ee92f
+
+	column seller_id
+		dataType: string
+		lineageTag: 5dac9119-4f18-4d4c-8cf3-f4f2b8e18e3e
+		summarizeBy: none
+		sourceColumn: seller_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column seller_state
+		dataType: string
+		lineageTag: bd9bf315-32a8-4021-bac6-d844557fed8f
+		summarizeBy: none
+		sourceColumn: seller_state
+
+		annotation SummarizationSetBy = Automatic
+
+	column seller_city
+		dataType: string
+		lineageTag: 10b71311-592d-40eb-a1ee-9e8c0f51f043
+		summarizeBy: none
+		sourceColumn: seller_city
+
+		annotation SummarizationSetBy = Automatic
+
+	column delivered_orders
+		dataType: int64
+		formatString: 0
+		lineageTag: b8fa8c5c-f959-4c6c-b14d-f8f2a8e3f930
+		summarizeBy: sum
+		sourceColumn: delivered_orders
+
+		annotation SummarizationSetBy = Automatic
+
+	column revenue
+		dataType: double
+		formatString: #,##0.00
+		lineageTag: 8e068fe1-5f27-4a68-a182-d116ababebea
+		summarizeBy: sum
+		sourceColumn: revenue
+
+		annotation SummarizationSetBy = Automatic
+
+	column late_orders
+		dataType: int64
+		formatString: 0
+		lineageTag: a7c8716c-ff70-4d8a-b235-28d418aa63ce
+		summarizeBy: sum
+		sourceColumn: late_orders
+
+		annotation SummarizationSetBy = Automatic
+
+	column late_rate
+		dataType: double
+		formatString: 0.0%
+		lineageTag: b3f52d4c-8bce-494e-b107-56de4a23bddf
+		summarizeBy: none
+		sourceColumn: late_rate
+
+		annotation SummarizationSetBy = Automatic
+
+	column handoff_late_rate
+		dataType: double
+		formatString: 0.0%
+		lineageTag: 49350867-a95e-4e82-a13b-cd9fb362719a
+		summarizeBy: none
+		sourceColumn: handoff_late_rate
+
+		annotation SummarizationSetBy = Automatic
+
+	column avg_review_score
+		dataType: double
+		formatString: 0.00
+		lineageTag: 71d25908-d129-4823-a29a-b143466136ed
+		summarizeBy: none
+		sourceColumn: avg_review_score
+
+		annotation SummarizationSetBy = Automatic
+
+	column avg_delivery_days
+		dataType: double
+		formatString: 0.00
+		lineageTag: 3718141d-8f82-4f61-bee4-b1b43669408b
+		summarizeBy: none
+		sourceColumn: avg_delivery_days
+
+		annotation SummarizationSetBy = Automatic
+
+	column platform_late_rate
+		dataType: double
+		formatString: 0.0%
+		lineageTag: b9263634-6404-406a-b4c4-eb7bbdd227e3
+		summarizeBy: none
+		sourceColumn: platform_late_rate
+
+		annotation SummarizationSetBy = Automatic
+
+	column performance_tier
+		dataType: string
+		lineageTag: 94d7e5b5-5c44-48c7-9173-2f16f53a35ac
+		summarizeBy: none
+		sourceColumn: performance_tier
+		sortByColumn: performance_tier_sort
+
+		annotation SummarizationSetBy = Automatic
+
+	column performance_tier_sort
+		dataType: int64
+		formatString: 0
+		lineageTag: 5a7adf2b-ab98-47c0-a703-ec0d36172a2c
+		summarizeBy: none
+		sourceColumn: performance_tier_sort
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'dev seller_scorecard' = m
+		mode: import
+		source =
+				let
+				    Source = PostgreSQL.Database("localhost:5434", "olist_dw"),
+				    dev_seller_scorecard = Source{[Schema="dev",Item="seller_scorecard"]}[Data]
+				in
+				    dev_seller_scorecard
+
+	annotation PBI_ResultType = Table
+

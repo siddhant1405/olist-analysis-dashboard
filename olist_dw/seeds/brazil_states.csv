@@ -1,0 +1,28 @@
+state,state_name,region,region_sort,population_2022
+SP,Sao Paulo,Southeast,1,44420459
+MG,Minas Gerais,Southeast,1,20538718
+RJ,Rio de Janeiro,Southeast,1,16054524
+ES,Espirito Santo,Southeast,1,3833486
+PR,Parana,South,2,11443208
+RS,Rio Grande do Sul,South,2,10880506
+SC,Santa Catarina,South,2,7609601
+DF,Distrito Federal,Center-West,3,2817068
+GO,Goias,Center-West,3,7055228
+MT,Mato Grosso,Center-West,3,3658813
+MS,Mato Grosso do Sul,Center-West,3,2756700
+BA,Bahia,Northeast,4,14136417
+PE,Pernambuco,Northeast,4,9051113
+CE,Ceara,Northeast,4,8791688
+MA,Maranhao,Northeast,4,6775152
+PB,Paraiba,Northeast,4,3974495
+RN,Rio Grande do Norte,Northeast,4,3302406
+AL,Alagoas,Northeast,4,3127511
+PI,Piaui,Northeast,4,3269200
+SE,Sergipe,Northeast,4,2209558
+PA,Para,North,5,8116132
+AM,Amazonas,North,5,3941175
+RO,Rondonia,North,5,1581016
+TO,Tocantins,North,5,1511459
+AC,Acre,North,5,830026
+AP,Amapa,North,5,733508
+RR,Roraima,North,5,636303

@@ -37,3 +37,11 @@ models:
       +materialized: view
     marts:
       +materialized: table
+
+vars:
+  # Purchase-date window used for trend, cohort and seller analysis (end is exclusive).
+  # 2016 is sparse and orders after August 2018 are incomplete in the Olist snapshot.
+  analysis_start_date: "2017-01-01"
+  analysis_end_date: "2018-09-01"
+  # Assumed marketplace commission on item value; not in the Olist data. Used only for the freight subsidy break-even.
+  commission_rate: 0.15

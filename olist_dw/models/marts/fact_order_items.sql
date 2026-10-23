@@ -19,7 +19,7 @@ joined as (
     order_items.price,
     order_items.freight_value,
     products.product_category_name_english,
-    seller.state as saller_state
+    seller.state as seller_state
 
     from order_items left join products
     on order_items.product_id = products.product_id left join

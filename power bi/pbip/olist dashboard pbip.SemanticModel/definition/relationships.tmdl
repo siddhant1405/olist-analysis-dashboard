@@ -55,3 +55,43 @@ relationship 79ca7a27-d2d7-78a2-3b71-56c9944300ca
 	fromColumn: 'dev fact_order_items'.product_id
 	toColumn: 'dev dim_product'.product_id
 
+relationship d40ea632-8d7e-4c86-96e3-38ae4a3ab3be
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'dev fact_orders'.purchase_month
+	toColumn: LocalDateTable_faa9f15b-fd19-4f88-8383-63860e04662d.Date
+
+relationship 0bb36da5-daa3-40f0-9e7c-e88a17609372
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'dev customer_rfm'.reference_date
+	toColumn: LocalDateTable_4ac5a7e2-8e14-4f4e-bb3a-efe8b2f8c108.Date
+
+relationship 8aae1d4b-8766-426c-847d-b90be05d83d6
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'dev customer_summary'.reference_date
+	toColumn: LocalDateTable_f0ddc1bf-08e1-4a47-bc08-b0d33ccb06cf.Date
+
+relationship 33d3ceeb-d190-4733-b3ce-06b2762da238
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'dev customer_summary'.first_purchase_date
+	toColumn: LocalDateTable_e1dea15d-fa0d-4caf-ad80-8ff1afc82caf.Date
+
+relationship b7566537-5ff0-4207-a3b6-ab3e714a1fd6
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'dev customer_summary'.cohort_month
+	toColumn: LocalDateTable_ac187759-185c-4959-8526-62c5357cf653.Date
+
+relationship 91c72e6a-fcd1-403d-8b30-f5711e0dca38
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'dev customer_summary'.second_purchase_date
+	toColumn: LocalDateTable_c2c211b6-a3c6-45a6-97df-a741822039ce.Date
+
+relationship cf6d822f-b8b6-44dc-be43-ec80580992c1
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'dev customer_summary'.last_purchase_date
+	toColumn: LocalDateTable_3cb82547-a9ee-4d0b-9721-7cea5df7e68e.Date
+
+relationship 2e2b67e0-15c0-4726-ba0a-44cf54796038
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'dev customer_cohort_retention'.cohort_month
+	toColumn: LocalDateTable_b90d8bfc-53b9-46a6-a22f-5c5628b688f7.Date
+

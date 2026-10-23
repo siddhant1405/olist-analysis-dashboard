@@ -1,0 +1,196 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.10.0/schema.json",
+  "name": "123959449e1caa147918",
+  "position": {
+    "x": 495,
+    "y": 514,
+    "width": 455,
+    "height": 166,
+    "z": 8000,
+    "tabOrder": 8000
+  },
+  "visual": {
+    "visualType": "lineChart",
+    "query": {
+      "queryState": {
+        "Category": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "dev freight_subsidy_breakeven"
+                    }
+                  },
+                  "Property": "order_value_band"
+                }
+              },
+              "queryRef": "dev freight_subsidy_breakeven.order_value_band",
+              "nativeQueryRef": "order_value_band",
+              "active": true
+            }
+          ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "dev freight_subsidy_breakeven"
+                    }
+                  },
+                  "Property": "Band Freight Share"
+                }
+              },
+              "queryRef": "dev freight_subsidy_breakeven.Band Freight Share",
+              "nativeQueryRef": "Band Freight Share"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "dev freight_subsidy_breakeven"
+                    }
+                  },
+                  "Property": "Break-even at 10% Commission"
+                }
+              },
+              "queryRef": "dev freight_subsidy_breakeven.Break-even at 10% Commission",
+              "nativeQueryRef": "Break-even at 10% Commission"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "dev freight_subsidy_breakeven"
+                    }
+                  },
+                  "Property": "Break-even at 15% Commission"
+                }
+              },
+              "queryRef": "dev freight_subsidy_breakeven.Break-even at 15% Commission",
+              "nativeQueryRef": "Break-even at 15% Commission"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "dev freight_subsidy_breakeven"
+                    }
+                  },
+                  "Property": "Break-even at 20% Commission"
+                }
+              },
+              "queryRef": "dev freight_subsidy_breakeven.Break-even at 20% Commission",
+              "nativeQueryRef": "Break-even at 20% Commission"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "dev freight_subsidy_breakeven"
+                  }
+                },
+                "Property": "order_value_band"
+              }
+            },
+            "direction": "Ascending"
+          }
+        ],
+        "isDefaultSort": true
+      }
+    },
+    "visualContainerObjects": {
+      "background": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Freight share vs subsidy break-even, by order value'"
+                }
+              }
+            },
+            "fontFamily": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Segoe UI'"
+                }
+              }
+            },
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "12D"
+                }
+              }
+            },
+            "fontColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#1D1C1C'"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true,
+    "objects": {
+      "categoryAxis": [
+        {
+          "properties": {
+            "labelColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#1D1C1C'"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

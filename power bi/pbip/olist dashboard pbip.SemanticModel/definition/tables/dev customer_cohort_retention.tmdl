@@ -1,0 +1,79 @@
+table 'dev customer_cohort_retention'
+	lineageTag: 0fc92b20-9b50-4818-8a8e-bc730f028c87
+
+	/// Share of a first-purchase cohort that bought again in a given month after joining.
+	measure 'Cohort Retention Rate' = DIVIDE(SUM('dev customer_cohort_retention'[active_customers]), SUM('dev customer_cohort_retention'[cohort_size]))
+		formatString: 0.0%
+		lineageTag: 04780fa8-7181-426e-a674-75617d3bed7b
+
+	column cohort_month
+		dataType: dateTime
+		formatString: Short Date
+		lineageTag: 8b2bcd8b-e294-43ee-9b4e-7191b1923f88
+		summarizeBy: none
+		sourceColumn: cohort_month
+
+		variation Variation
+			isDefault
+			relationship: 2e2b67e0-15c0-4726-ba0a-44cf54796038
+			defaultHierarchy: LocalDateTable_b90d8bfc-53b9-46a6-a22f-5c5628b688f7.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column cohort_label
+		dataType: string
+		lineageTag: 66e45b88-c97b-4b73-8a57-44f57e58727b
+		summarizeBy: none
+		sourceColumn: cohort_label
+
+		annotation SummarizationSetBy = Automatic
+
+	column month_number
+		dataType: int64
+		formatString: 0
+		lineageTag: 53e952ed-36c4-4801-a742-0eac8bcd05f7
+		summarizeBy: sum
+		sourceColumn: month_number
+
+		annotation SummarizationSetBy = Automatic
+
+	column active_customers
+		dataType: int64
+		formatString: 0
+		lineageTag: 630f71ea-bf3a-4aad-b7c2-7b4db455ec35
+		summarizeBy: sum
+		sourceColumn: active_customers
+
+		annotation SummarizationSetBy = Automatic
+
+	column cohort_size
+		dataType: int64
+		formatString: 0
+		lineageTag: fddb6232-ebec-4e90-ae5e-a2b74e278d56
+		summarizeBy: sum
+		sourceColumn: cohort_size
+
+		annotation SummarizationSetBy = Automatic
+
+	column retention_rate
+		dataType: double
+		formatString: 0.0%
+		lineageTag: 8cc9ea1c-1f34-44f5-978e-4dd5a1ec5b24
+		summarizeBy: sum
+		sourceColumn: retention_rate
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'dev customer_cohort_retention' = m
+		mode: import
+		source =
+				let
+				    Source = PostgreSQL.Database("localhost:5434", "olist_dw"),
+				    dev_customer_cohort_retention = Source{[Schema="dev",Item="customer_cohort_retention"]}[Data]
+				in
+				    dev_customer_cohort_retention
+
+	annotation PBI_ResultType = Table
+

@@ -1,0 +1,68 @@
+version: 2
+
+seeds:
+  - name: brazil_states
+    description: >-
+      The 27 Brazilian federative units with their IBGE macro-region and 2022
+      Census population. External reference data, not part of the Olist
+      export; used for regional grouping and customers-per-population.
+    columns:
+      - name: state
+        tests:
+          - not_null
+          - unique
+      - name: region
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['Southeast', 'South', 'Center-West', 'Northeast', 'North']
+      - name: population_2022
+        tests:
+          - not_null
+
+models:
+  - name: region_summary
+    description: >-
+      One row per Brazilian state: population, Olist customers, revenue,
+      freight, sellers and delivery performance for delivered orders in the
+      analysis window. States with no orders keep a row with zero counts.
+    columns:
+      - name: state
+        tests:
+          - not_null
+          - unique
+      - name: customers_per_100k
+        description: Distinct customers per 100,000 residents (2022 Census) - a penetration measure.
+      - name: freight_share_of_revenue
+        description: Freight charged divided by item value.
+      - name: local_seller_order_share
+        description: Share of the state's orders shipped entirely by sellers in the same state.
+
+  - name: freight_demand_elasticity
+    description: >-
+      Single-row estimate of how order volume on a route (seller state to
+      customer state) responds to month-to-month changes in weight-adjusted
+      freight, using route and month fixed effects. Routes need 500+ orders and
+      route-months 10+. Observational: freight changes only ~7% within a route,
+      so treat it as an indicative range (roughly -0.1 to -1.0), not a precise
+      causal effect.
+    columns:
+      - name: freight_elasticity
+        description: Percent change in route orders for a 1% change in freight.
+        tests:
+          - not_null
+
+  - name: freight_subsidy_breakeven
+    description: >-
+      Freight burden by customer region and order value band, compared with
+      the break-even freight share for a small subsidy (|elasticity| x
+      commission). Commission is not in the data; is_subsidy_profitable uses
+      the commission_rate var and break-even lines are given for 10/15/20%.
+    columns:
+      - name: customer_region
+        tests:
+          - not_null
+      - name: is_subsidy_profitable
+        tests:
+          - not_null
